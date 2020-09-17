@@ -2,7 +2,7 @@ DOMAIN=$1
 LOCAL_RANK=${2:-0}
 LEARNING_RATE=${3:-1e-5}
 BATCH_SIZE=${4:-2}
-ROOT=../data/simmc/simmc_$DOMAIN
+ROOT=../data/simmc_$DOMAIN
 MODEL="facebook/bart-large"
 
 python main.py \

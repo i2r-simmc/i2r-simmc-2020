@@ -2,7 +2,7 @@
 for DOMAIN in "furniture" "fashion"
 do
   # DOMAIN="fashion"
-  ROOT="../data/simmc/simmc_${DOMAIN}/"
+  ROOT="../data/simmc_${DOMAIN}/"
 
   # Input files.
   TRAIN_JSON_FILE="${ROOT}${DOMAIN}_train_dials.json"
@@ -51,7 +51,7 @@ python preprocess.py \
 # Train split
 for DOMAIN in "furniture" "fashion"
 do
-  ROOT="../data/simmc/simmc_${DOMAIN}/"
+  ROOT="../data/simmc_${DOMAIN}/"
   for SPLIT in "train" "dev" "devtest"
   do
   python -m preprocess_input \
