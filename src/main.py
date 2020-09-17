@@ -477,6 +477,7 @@ if __name__ == '__main__':
                         help='model name')
     parser.add_argument('--learning_rate', default=1e-5, type=float, required=False,
                         help='learning rate')
+    parser.add_argument("--load_model_index", type=int, default=0, required=False, help="which index of the model to load")
     parser.add_argument("--local_rank", type=int, default=0, help="For distributed training: local_rank")
     parser.add_argument("--batch_size", type=int, required=False, help="batch size for training")
     parser.add_argument("--test_batch_size", type=int, default=160, required=False, help="test batch size")
@@ -490,6 +491,8 @@ if __name__ == '__main__':
     cfg['test_batch_size'] = args.test_batch_size
     device = torch.device("cuda", args.local_rank)
     cfg['device'] = device
+    cfg['save_model_file'] = '%s_%d' % (cfg['save_model_file'], args.load_model_index)
+    cfg['load_model_file'] = '%s_%d' % (cfg['load_model_file'], args.load_model_index)
     cfg['encoder_decoder_model_name_or_path'] = args.encoder_decoder_model_name_or_path
     if 'train' == args.action:
         train(cfg)

@@ -19,4 +19,5 @@ python main.py \
     --encoder_decoder_model_name_or_path=$MODEL \
     --learning_rate=$LEARNING_RATE \
     --local_rank=$LOCAL_RANK \
-    --batch_size=$BATCH_SIZE
+    --batch_size=$BATCH_SIZE \
+    --load_model_index=$LOCAL_RANK
