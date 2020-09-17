@@ -30,18 +30,18 @@ done
 # Step 2 preprocess data for subtask #1
 ## Preprocess for subtask#1 (fashion and furniture, multi-modal)
 python preprocess.py \
-    --data_path=../data/simmc \
+    --data_path=../data \
     --use_multimodal_contexts \
     --use_action_prediction
 
 ## Preprocess for subtask#2 (fashion and furniture, multi-modal)
 python preprocess.py \
-    --data_path=../data/simmc \
+    --data_path=../data \
     --use_multimodal_contexts
 
 ## Preprocess for subtask#3 (fashion and furniture, multi-modal)
 python preprocess.py \
-    --data_path=../data/simmc \
+    --data_path=../data \
     --use_multimodal_contexts \
     --generate_belief_state
 
