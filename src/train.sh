@@ -7,7 +7,7 @@ MODEL="facebook/bart-large"
 
 python main.py \
     --action=train \
-    --config_file=../config/simmc_transformers_fusion_fashion.yml \
+    --config_file=../config/simmc_transformers_fusion_${DOMAIN}.yml \
     --train_data_src="$ROOT"/${DOMAIN}_train_dials_predict.txt \
     --train_data_tgt_subtask1="$ROOT"/simmc_${DOMAIN}_api_train.json \
     --train_data_tgt_subtask2="$ROOT"/${DOMAIN}_train_dials_target.txt \
