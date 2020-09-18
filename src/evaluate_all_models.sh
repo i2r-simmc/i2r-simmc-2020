@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
 python3 run.py --bart_model bart-base/ --output_dir data/simmc_fashion/ train_dir data/simmc_fashion/ --use_pretrain --architecture bi --eval 
