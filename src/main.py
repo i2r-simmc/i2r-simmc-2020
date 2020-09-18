@@ -182,8 +182,8 @@ def generation(config):
         pretrained_model_states = torch.load(config['load_model_file'] + "/pytorch_model.bin",
                                              map_location=config['device'])
         model.load_state_dict(pretrained_model_states, strict=False)
+        print('Loaded model:', config['load_model_file'])
     model.to(config['device'])
-    print('Loaded model:', config['load_model_file'])
 
     def collate(examples):
         src_list = list(map(lambda x: x[0], examples))
@@ -473,6 +473,8 @@ if __name__ == '__main__':
                         help='dev data target for subtask #2')
     parser.add_argument('--test_data_tgt_subtask3', type=str, required=False,
                         help='dev data target for subtask #3')
+    parser.add_argument('--test_output_pred', type=str, required=False,
+                        help='output prediction for subtask #1,#3,#2')
     parser.add_argument('--encoder_decoder_model_name_or_path', type=str, required=True,
                         help='model name')
     parser.add_argument('--learning_rate', default=1e-5, type=float, required=False,
@@ -480,7 +482,7 @@ if __name__ == '__main__':
     parser.add_argument("--load_model_index", type=int, default=0, required=False, help="which index of the model to load")
     parser.add_argument("--local_rank", type=int, default=0, help="For distributed training: local_rank")
     parser.add_argument("--batch_size", type=int, required=False, help="batch size for training")
-    parser.add_argument("--test_batch_size", type=int, default=160, required=False, help="test batch size")
+    parser.add_argument("--test_batch_size", type=int, default=100, required=False, help="test batch size")
 
     args = parser.parse_args()
     config_file = args.config_file
@@ -494,6 +496,7 @@ if __name__ == '__main__':
     cfg['save_model_file'] = '%s_%d' % (cfg['save_model_file'], args.load_model_index)
     cfg['load_model_file'] = '%s_%d' % (cfg['load_model_file'], args.load_model_index)
     cfg['encoder_decoder_model_name_or_path'] = args.encoder_decoder_model_name_or_path
+    cfg['test_output_pred'] = args.test_output_pred
     if 'train' == args.action:
         train(cfg)
     elif 'generate' == args.action:
