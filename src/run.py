@@ -13,8 +13,6 @@ from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 
-from transformers import BertModel, BertConfig, BertTokenizer, BertTokenizerFast, AutoTokenizer
-from transformers import DistilBertModel, DistilBertConfig, DistilBertTokenizer
 from transformers import BartModel, BartConfig, BartTokenizer
 from transformers import AutoTokenizer
 from transformers.modeling_bart import BartLMHeadModel
@@ -106,11 +104,11 @@ def eval_running_model(dataloader, test=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     ## Required parameters
-    parser.add_argument("--bert_model", default='ckpt/pretrained/bert-small-uncased', type=str)
+    parser.add_argument("--bart_model", default='bart-base/', type=str)
     parser.add_argument("--eval", action="store_true")
     parser.add_argument("--model_type", default='bart', type=str)
     parser.add_argument("--output_dir", required=True, type=str)
-    parser.add_argument("--train_dir", default='data/ubuntu_data', type=str)
+    parser.add_argument("--train_dir", default='data/simmc_fashion', type=str)
 
     parser.add_argument("--use_pretrain", action="store_true")
     parser.add_argument("--architecture", required=True, type=str, help='[poly, bi]')
@@ -155,15 +153,12 @@ if __name__ == '__main__':
         set_seed(args)
 
     MODEL_CLASSES = {
-        'bert': (BertConfig, BertTokenizerFast, BertModel),
-        'distilbert': (DistilBertConfig, DistilBertTokenizer, DistilBertModel),
-        'bart': (BartConfig, BartTokenizer, BartModel),
+        'bart': (BartConfig, BartTokenizer, BartModel)
     }
-    ConfigClass, TokenizerClass, BertModelClass = MODEL_CLASSES[args.model_type]
+    ConfigClass, TokenizerClass, BartModelClass = MODEL_CLASSES[args.model_type]
 
-    ## init dataset and bert model
+    ## init dataset and bart model
     tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large", do_lower_case=True, clean_text=False)
-    #tokenizer = TokenizerClass.from_pretrained(os.path.join(args.bert_model, "vocab.txt"), do_lower_case=True, clean_text=False)
     context_transform = SelectionJoinTransform(tokenizer=tokenizer, max_len=args.max_contexts_length)
     response_transform = SelectionSequentialTransform(tokenizer=tokenizer, max_len=args.max_response_length)
 
@@ -193,8 +188,8 @@ if __name__ == '__main__':
 
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
-    shutil.copyfile(os.path.join(args.bert_model, 'vocab.txt'), os.path.join(args.output_dir, 'vocab.txt'))
-    shutil.copyfile(os.path.join(args.bert_model, 'config.json'), os.path.join(args.output_dir, 'config.json'))
+    shutil.copyfile(os.path.join(args.bart_model, 'vocab.txt'), os.path.join(args.output_dir, 'vocab.txt'))
+    shutil.copyfile(os.path.join(args.bart_model, 'config.json'), os.path.join(args.output_dir, 'config.json'))
     log_wf = open(os.path.join(args.output_dir, 'log.txt'), 'a', encoding='utf-8')
     print (args, file=log_wf)
 
@@ -202,23 +197,23 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     ########################################
-    ## build BERT encoder
+    ## build BART encoder
     ########################################
-    bert_config = ConfigClass.from_json_file(os.path.join(args.bert_model, 'config.json'))
+    bart_config = ConfigClass.from_json_file(os.path.join(args.bart_model, 'config.json'))
     if args.use_pretrain and not args.eval:
-        previous_model_file = os.path.join(args.bert_model, "pytorch_model.bin")
+        previous_model_file = os.path.join(args.bart_model, "pytorch_model.bin")
         print('Loading parameters from', previous_model_file)
         log_wf.write('Loading parameters from %s' % previous_model_file + '\n')
         model_state_dict = torch.load(previous_model_file, map_location="cpu")
-        bert = BertModelClass.from_pretrained(args.bert_model, state_dict=model_state_dict)
+        bart = BartModelClass.from_pretrained(args.bart_model, state_dict=model_state_dict)
         del model_state_dict
     else:
-        bert = BertModelClass(bert_config)
+        bart = BartModelClass(bart_config)
 
     if args.architecture == 'poly':
-        model = PolyEncoder(bert_config, bert=bert, poly_m=args.poly_m)
+        model = PolyEncoder(bart_config, bart=bart, poly_m=args.poly_m)
     elif args.architecture == 'bi':
-        model = BiEncoder(bert_config, bert=bert)
+        model = BiEncoder(bart_config, bart=bart)
     else:
         raise Exception('Unknown architecture.')
     model.resize_token_embeddings(len(tokenizer)) 
