@@ -496,7 +496,7 @@ if __name__ == '__main__':
     cfg['save_model_file'] = '%s_%d' % (cfg['save_model_file'], args.load_model_index)
     cfg['load_model_file'] = '%s_%d' % (cfg['load_model_file'], args.load_model_index)
     cfg['encoder_decoder_model_name_or_path'] = args.encoder_decoder_model_name_or_path
-    cfg['test_output_pred'] = args.test_output_pred
+    cfg['test_output_pred'] = '%s_%d' % (args.test_output_pred, args.load_model_index)
     if 'train' == args.action:
         train(cfg)
     elif 'generate' == args.action:
