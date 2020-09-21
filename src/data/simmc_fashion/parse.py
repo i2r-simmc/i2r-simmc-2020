@@ -16,7 +16,7 @@ dial_index = 0
 
 print("Writing to " + '{}.txt'.format(args.mode))
 
-outfile = open('{}.txt'.format(args.mode), 'w')
+outfile = open('data/simmc_fashion/{}.txt'.format(args.mode), 'w')
 for content in data['dialogue_data']:
     turn_index = 0
     turns = content['dialogue']
