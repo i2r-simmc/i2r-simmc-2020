@@ -185,6 +185,13 @@ def post_process(config):
             attributes = action_attribute_str[idx_split_action:].replace('[', '').replace(']', '').strip()
             if is_fashion:
                 attributes = list(filter(lambda x: x, map(str.strip, attributes.split(','))))
+                predictions.append({
+                    'turn_idx': turn['turn_idx'],
+                    'action': action,
+                    'attributes': {
+                        'attributes': attributes
+                    }
+                })
             else:
                 attribute_dict = dict()
                 for kv_pair in attributes.split(','):
@@ -194,20 +201,15 @@ def post_process(config):
                     if ':' in kv_pair:
                         kv_pair_split = kv_pair.split(':')
                         kv_pair_split = list(filter(lambda x: x.strip(), kv_pair_split))
-                        kv_pair_split[0] = kv_pair_split[0].strip()
-                        kv_pair_split[1] = kv_pair_split[1].strip()
                         if len(kv_pair_split) == 1:
-                            attribute_dict[kv_pair_split[0]] = None
+                            attribute_dict[kv_pair_split[0].strip()] = None
                         else:
-                            attribute_dict[kv_pair_split[0]] = kv_pair_split[1]
-                attributes = attribute_dict
-            predictions.append({
-                'turn_idx': turn['turn_idx'],
-                'action': action,
-                'attributes': {
-                    'attributes': attributes
-                }
-            })
+                            attribute_dict[kv_pair_split[0].strip()] = kv_pair_split[1].strip()
+                predictions.append({
+                    'turn_idx': turn['turn_idx'],
+                    'action': action,
+                    'attributes': attribute_dict
+                })
             count += 1
         subtask1_dialog_output.append({
             'dialog_id': d['dialogue_idx'],
