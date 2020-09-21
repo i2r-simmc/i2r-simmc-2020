@@ -6,7 +6,7 @@ python3 data/simmc_fashion/parse.py --mode dev
 python3 data/simmc_fashion/parse.py --mode devtest
 
 mv data/simmc_fashion/devtest.txt data/simmc_fashion/test.txt
-cp data/simmc_furniture/fashion_devtest_dials_retrieval_candidates.json data/simmc_fashion/candidates.json
+cp data/simmc_fashion/fashion_devtest_dials_retrieval_candidates.json data/simmc_fashion/candidates.json
 
 
 #Furniture
