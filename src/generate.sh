@@ -2,6 +2,7 @@ DOMAIN=$1
 LOCAL_RANK=${2:-0}
 LEARNING_RATE=${3:-1e-5}
 BATCH_SIZE=${4:-2}
+TEST_BATCH_SIZE=${5:100}
 ROOT=../data/simmc_$DOMAIN
 OUTPUT_ROOT=../output/$DOMAIN
 MODEL="facebook/bart-large"
@@ -20,6 +21,7 @@ python main.py \
     --learning_rate=$LEARNING_RATE \
     --local_rank=$LOCAL_RANK \
     --batch_size=$BATCH_SIZE \
+    --test_batch_size=$TEST_BATCH_SIZE \
     --load_model_index=$LOCAL_RANK
 
 

@@ -194,6 +194,8 @@ def post_process(config):
                     if ':' in kv_pair:
                         kv_pair_split = kv_pair.split(':')
                         kv_pair_split = list(filter(lambda x: x.strip(), kv_pair_split))
+                        kv_pair_split[0] = kv_pair_split[0].strip()
+                        kv_pair_split[1] = kv_pair_split[1].strip()
                         if len(kv_pair_split) == 1:
                             attribute_dict[kv_pair_split[0]] = None
                         else:
