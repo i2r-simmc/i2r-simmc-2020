@@ -6,10 +6,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--mode', type=str)
 args = parser.parse_args()
 
-with open('fashion_{}_dials.json'.format(args.mode)) as infile:
+with open('data/simmc_fashion/fashion_{}_dials.json'.format(args.mode)) as infile:
     data = json.load(infile)
     
-with open('fashion_{}_dials_retrieval_candidates.json'.format(args.mode)) as infile:
+with open('data/simmc_fashion/fashion_{}_dials_retrieval_candidates.json'.format(args.mode)) as infile:
     responses = json.load(infile)
     
 dial_index = 0
