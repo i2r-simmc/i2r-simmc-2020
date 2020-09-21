@@ -256,9 +256,9 @@ def generation(config):
         return src_pad, src_mask_pad, tgt_pad
 
     test_dataset = SimmcFusionDataset(arguments.test_data_src,
-                                      arguments.test_data_tgt_subtask1,
-                                      arguments.test_data_tgt_subtask2,
-                                      arguments.test_data_tgt_subtask3,
+                                      None,
+                                      None,
+                                      None,
                                       tokenizer_enc,
                                       tokenizer_dec)
 
@@ -267,34 +267,20 @@ def generation(config):
         test_dataset, sampler=test_sampler, batch_size=config['test_batch_size'], collate_fn=collate
     )
     results = []
-    valid_acc = []
-    valid_recall = []
     with torch.no_grad():
         for step, batch in enumerate(tqdm(test_dataloader, desc="Test Iteration")):
             src = batch[0].to(config['device'])
             src_mask = batch[1].to(config['device'])
             tgt = batch[2].to(config['device'])
-            decoded_gt = tokenizer_dec.batch_decode(tgt)
             generated = model.generate(src,
                                        max_length=200 if config['name'] == 'simmc-fusion' else 60,
                                        decoder_start_token_id=tokenizer_dec.pad_token_id,
                                        attention_mask=src_mask,
                                        early_stopping=True)
             decoded = tokenizer_dec.batch_decode(generated)
-            gold_rp = _clean_special_characters(decoded_gt, tokenizer_dec, remove_space=config['remove_space'] if \
-                'remove_space' in config else True)
             pred_rp = _clean_special_characters(decoded, tokenizer_dec, remove_space=config['remove_space'] if \
                 'remove_space' in config else True)
-            acc_step = []
-            for idx in range(len(gold_rp)):
-                if gold_rp[idx] == pred_rp[idx] and gold_rp[idx].strip():
-                    acc_step.append(1)
-                else:
-                    acc_step.append(0)
-            valid_acc.append(np.mean(acc_step))
             results += pred_rp
-    print(np.mean(valid_acc))
-    print(np.mean(valid_recall))
     save_json(results, config['test_output_pred'])
 
 

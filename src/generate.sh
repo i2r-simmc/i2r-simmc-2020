@@ -8,13 +8,11 @@ OUTPUT_ROOT=../output/$DOMAIN
 MODEL="facebook/bart-large"
 TEST_SPLIT=devtest
 
+#TODO: delete test_data_tgt_subtask1 test_data_tgt_subtask2 test_data_tgt_subtask3
 python main.py \
     --action=generate \
     --config_file=../config/simmc_transformers_fusion_${DOMAIN}.yml \
     --test_data_src="$ROOT"/${DOMAIN}_${TEST_SPLIT}_dials_predict.txt \
-    --test_data_tgt_subtask1="$ROOT"/simmc_${DOMAIN}_api_${TEST_SPLIT}.json \
-    --test_data_tgt_subtask2="$ROOT"/${DOMAIN}_${TEST_SPLIT}_dials_target.txt \
-    --test_data_tgt_subtask3="$ROOT"/simmc_${DOMAIN}_resp_${TEST_SPLIT}.json \
     --encoder_decoder_model_name_or_path=$MODEL \
     --test_output_pred="$OUTPUT_ROOT"/output.json \
     --domain=$DOMAIN \

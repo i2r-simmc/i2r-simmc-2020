@@ -77,22 +77,26 @@ class SimmcFusionDataset(Dataset):
         print('loading data from', data_file_src)
         with open(data_file_src) as f_src:
             lines_src = f_src.readlines()
-        lines_tgt1 = []
-        tgt_dialogs = load_json(data_file_tgt1)
-        for d in tgt_dialogs['dialogs']:
-            for turn in d['dialog']:
-                target = turn['target']
-                lines_tgt1.append(target)
-        with open(data_file_tgt2) as f_tgt:
-            lines_tgt2 = f_tgt.readlines()
-        lines_tgt2 = [e.replace('<EOS>', '').strip()  for e in lines_tgt2]
-        lines_tgt3 = []
-        tgt_dialogs = load_json(data_file_tgt3)
-        for d in tgt_dialogs['dialogs']:
-            for turn in d['dialog']:
-                target = turn['answer'].replace(START_BELIEF_STATE, '').replace(END_OF_BELIEF, '').strip()
-                lines_tgt3.append(target)
-        lines_tgt = ['<cls> ' + lines_tgt1[idx] + ' <sep1> ' + lines_tgt2[idx] + ' <sep2> ' + lines_tgt3[idx] + ' <end>' for idx in range(len(lines_tgt1))]
+        if data_file_tgt1 is not None and data_file_tgt2 is not None and data_file_tgt3 is not None:
+            lines_tgt1 = []
+            tgt_dialogs = load_json(data_file_tgt1)
+            for d in tgt_dialogs['dialogs']:
+                for turn in d['dialog']:
+                    target = turn['target']
+                    lines_tgt1.append(target)
+            with open(data_file_tgt2) as f_tgt:
+                lines_tgt2 = f_tgt.readlines()
+            lines_tgt2 = [e.replace('<EOS>', '').strip()  for e in lines_tgt2]
+            lines_tgt3 = []
+            tgt_dialogs = load_json(data_file_tgt3)
+            for d in tgt_dialogs['dialogs']:
+                for turn in d['dialog']:
+                    target = turn['answer'].replace(START_BELIEF_STATE, '').replace(END_OF_BELIEF, '').strip()
+                    lines_tgt3.append(target)
+            lines_tgt = ['<cls> ' + lines_tgt1[idx] + ' <sep1> ' + lines_tgt2[idx] + ' <sep2> ' + lines_tgt3[idx] + ' <end>' for idx in range(len(lines_tgt1))]
+        else:
+            lines_tgt = [
+                '<cls> <end>' for _ in range(len(lines_src))]
         for idx in range(len(lines_src)):
             src = tokenizer_enc(lines_src[idx], add_special_tokens=True)
             src_vec = src.input_ids
