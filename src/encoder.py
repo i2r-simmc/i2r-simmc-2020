@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from transformers import BertPreTrainedModel, BartModel
 
 
-class BiEncoder(BartPreTrainedModel):
+class BiEncoder(BertPreTrainedModel):
     def __init__(self, config, *inputs, **kwargs):
         super().__init__(config, *inputs, **kwargs)
         self.bart = kwargs['bart']
@@ -39,7 +39,7 @@ class BiEncoder(BartPreTrainedModel):
             return dot_product
 
 
-class PolyEncoder(BartPreTrainedModel):
+class PolyEncoder(BertPreTrainedModel):
     def __init__(self, config, *inputs, **kwargs):
         super().__init__(config, *inputs, **kwargs)
         self.bart = kwargs['bart']
