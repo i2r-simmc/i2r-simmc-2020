@@ -41,4 +41,4 @@ for content in data['dialogue_data']:
         
     dial_index += 1
 
-print("Writing done!")
+print("Preprocessing completed.")
