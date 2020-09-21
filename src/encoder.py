@@ -2,13 +2,13 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import BertPreTrainedModel, BartModel
+from transformers import BertPreTrainedModel, BertModel
 
 
 class BiEncoder(BertPreTrainedModel):
     def __init__(self, config, *inputs, **kwargs):
         super().__init__(config, *inputs, **kwargs)
-        self.bart = kwargs['bart']
+        self.bert = kwargs['bert']
 
     def forward(self, context_input_ids, context_input_masks,
                             responses_input_ids, responses_input_masks, labels=None):
@@ -17,13 +17,13 @@ class BiEncoder(BertPreTrainedModel):
             responses_input_ids = responses_input_ids[:, 0, :].unsqueeze(1)
             responses_input_masks = responses_input_masks[:, 0, :].unsqueeze(1)
 
-        context_vec = self.bart(context_input_ids, context_input_masks)[0][:,0,:]  # [bs,dim]
+        context_vec = self.bert(context_input_ids, context_input_masks)[0][:,0,:]  # [bs,dim]
 
         batch_size, res_cnt, seq_length = responses_input_ids.shape
         responses_input_ids = responses_input_ids.view(-1, seq_length)
         responses_input_masks = responses_input_masks.view(-1, seq_length)
 
-        responses_vec = self.bart(responses_input_ids, responses_input_masks)[0][:,0,:]  # [bs,dim]
+        responses_vec = self.bert(responses_input_ids, responses_input_masks)[0][:,0,:]  # [bs,dim]
         responses_vec = responses_vec.view(batch_size, res_cnt, -1)
 
         if labels is not None:
@@ -42,7 +42,7 @@ class BiEncoder(BertPreTrainedModel):
 class PolyEncoder(BertPreTrainedModel):
     def __init__(self, config, *inputs, **kwargs):
         super().__init__(config, *inputs, **kwargs)
-        self.bart = kwargs['bart']
+        self.bert = kwargs['bert']
         self.poly_m = kwargs['poly_m']
         self.poly_code_embeddings = nn.Embedding(self.poly_m, config.hidden_size)
         # https://github.com/facebookresearch/ParlAI/blob/master/parlai/agents/transformer/polyencoder.py#L355
