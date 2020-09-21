@@ -26,8 +26,6 @@ END_OF_BELIEF = '<EOB>'
 END_OF_SENTENCE = '<EOS>'
 
 TEMPLATE_PREDICT = '{context} {START_BELIEF_STATE} '
-TEMPLATE_TARGET = '{context} {START_BELIEF_STATE} {belief_state} ' \
-    '{END_OF_BELIEF} {response} {END_OF_SENTENCE}'
 
 
 def convert_json_to_flattened(
@@ -93,7 +91,7 @@ def convert_json_to_flattened(
             predicts.append(predict)
 
             # Format the main output
-            target = str_belief_state
+            target = '%s %s %s' % (START_BELIEF_STATE, str_belief_state, END_OF_BELIEF)
             targets.append(target)
 
     # Create a directory if it does not exist
@@ -141,8 +139,6 @@ def parse_flattened_results_from_file(path):
         for line in f_in:
             # Remove eos token and restore action
             line = line.replace('<EOS>', '').strip()
-            if line.count(':') >= 4:
-                line = '%s.%s' % (line[:line.rindex(':')], line[line.rindex(':') + 1:])
             parsed = parse_flattened_result(line)
             results.append(parsed)
 

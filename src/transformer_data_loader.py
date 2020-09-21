@@ -4,6 +4,10 @@ from torch.utils.data import Dataset
 from util import load_json
 
 
+START_BELIEF_STATE = '=> Belief State :'
+END_OF_BELIEF = '<EOB>'
+
+
 class SimmcDataset(Dataset):
     def __init__(self, data_file_src, data_file_tgt, tokenizer_enc, tokenizer_dec, is_train=True):
         self.src = []
@@ -16,7 +20,7 @@ class SimmcDataset(Dataset):
         with open(data_file_tgt) as f_tgt:
             lines_tgt = f_tgt.readlines()
         for idx in range(len(lines_src)):
-            line_tgt = lines_tgt[idx]
+            line_tgt = lines_tgt[idx].replace(START_BELIEF_STATE, '').replace(END_OF_BELIEF, '').strip()
             line_tgt = '<cls> %s <end>' % line_tgt
             src = tokenizer_enc(lines_src[idx], add_special_tokens=True)
             src_vec = src.input_ids
@@ -86,7 +90,7 @@ class SimmcFusionDataset(Dataset):
         tgt_dialogs = load_json(data_file_tgt3)
         for d in tgt_dialogs['dialogs']:
             for turn in d['dialog']:
-                target = turn['answer']
+                target = turn['answer'].replace(START_BELIEF_STATE, '').replace(END_OF_BELIEF, '').strip()
                 lines_tgt3.append(target)
         lines_tgt = ['<cls> ' + lines_tgt1[idx] + ' <sep1> ' + lines_tgt2[idx] + ' <sep2> ' + lines_tgt3[idx] + ' <end>' for idx in range(len(lines_tgt1))]
         for idx in range(len(lines_src)):

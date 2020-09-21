@@ -16,8 +16,10 @@ from preprocessing.convert_simmc import parse_flattened_results_from_file, parse
 from transformer_data_loader import SimmcFusionDataset
 from util import get_config, load_json, save_json
 from utils.convert_utils import parse_action_results_from_data
-from utils.evaluation_bleu import compute_metrics, compute_metrics_by_data
 from utils.evaluation_dst import evaluate_from_flat_list
+
+START_BELIEF_STATE = '=> Belief State :'
+END_OF_BELIEF = '<EOB>'
 
 
 def _get_models(config):
@@ -95,12 +97,14 @@ def _get_enc_dec_tokenizers(config, model):
 
 
 def _clean_special_characters(lines, tokenizer_dec, remove_space=True):
-    eos_token = tokenizer_dec.eos_token  # .lower()
-    pad_token = tokenizer_dec.pad_token  # .lower()
-    # lines = [rp.lower() for rp in lines]
+    eos_token = tokenizer_dec.eos_token
+    pad_token = tokenizer_dec.pad_token
     lines = [rp[:(rp.index(eos_token) if eos_token in rp else len(rp))] for rp in lines]
-    lines = [rp.replace(r'<|endoftext|>', '').replace('!', '').replace('<cls>', '').replace('<CLS>', '').replace('[sep]', '').replace('[SEP]', '').replace(
-        '<end>', '').replace('<END>', '').replace('<eod>', '').replace('<EOD>', '') for rp in lines]
+    lines = [
+        rp.replace(r'<|endoftext|>', '').replace('!', '').replace('<cls>', '').replace('<CLS>', '').replace('[sep]',
+                                                                                                            '').replace(
+            '[SEP]', '').replace(
+            '<end>', '').replace('<END>', '').replace('<eod>', '').replace('<EOD>', '') for rp in lines]
     if remove_space:
         lines = [rp.replace(' ', '') for rp in lines]
     lines = [rp.replace(pad_token, '') for rp in lines]
@@ -156,19 +160,66 @@ def post_process(config):
             a, b = line.split('<sep1>', maxsplit=1)
             if '<sep2>' in b:
                 b, c = b.split('<sep2>', maxsplit=1)
-                if b.count(':') >= 4:
-                    b = '%s.%s' % (b[:b.rindex(':')], b[b.rindex(':')+1:])
                 return a.strip(), b.strip(), c.strip()
             return a.strip(), b.strip(), ""
         return line.strip(), "", ""
 
     input_path_pred = load_json(config['test_output_pred'])
     input_path_pred = list(map(_split, input_path_pred))
+    is_fashion = config['domain'] == 'fashion'
 
     subtask1 = list(map(lambda x: x[0], input_path_pred))
     subtask3 = list(map(lambda x: x[1], input_path_pred))
     subtask2 = list(map(lambda x: x[2], input_path_pred))
-    with open(config['test_task3_output'], 'w') as f:
+
+    original_data = load_json(config['test_data_original_file'])
+    subtask1_dialog_output = []
+    count = 0
+    for d in original_data['dialogue_data']:
+        predictions = []
+        for turn in d['dialogue']:
+            action_attribute_str = subtask1[count].strip()
+            idx_split_action = action_attribute_str.index('[') if \
+                '[' in action_attribute_str else len(action_attribute_str)
+            action = action_attribute_str[:idx_split_action].strip()
+            attributes = action_attribute_str[idx_split_action:].replace('[', '').replace(']', '').strip()
+            if is_fashion:
+                attributes = list(filter(lambda x: x, map(str.strip, attributes.split(','))))
+            else:
+                attribute_dict = dict()
+                for kv_pair in attributes.split(','):
+                    kv_pair = kv_pair.strip()
+                    if not kv_pair:
+                        continue
+                    if ':' in kv_pair:
+                        kv_pair_split = kv_pair.split(':')
+                        kv_pair_split = list(filter(lambda x: x.strip(), kv_pair_split))
+                        if len(kv_pair_split) == 1:
+                            attribute_dict[kv_pair_split[0]] = None
+                        else:
+                            attribute_dict[kv_pair_split[0]] = kv_pair_split[1]
+                attributes = attribute_dict
+            predictions.append({
+                'turn_idx': turn['turn_idx'],
+                'action': action,
+                'attributes': {
+                    'attributes': attributes
+                }
+            })
+            count += 1
+        subtask1_dialog_output.append({
+            'dialog_id': d['dialogue_idx'],
+            'predictions': predictions
+        })
+
+    # Compatible with official simmc evaluation script
+    subtask3 = list(map(lambda x: '%s %s %s' % (START_BELIEF_STATE, x, END_OF_BELIEF), subtask3))
+
+    json.dump(subtask1_dialog_output, open(config['test_data_output_subtask1'], 'w'))
+    with open(config['test_data_output_subtask2'], 'w') as f:
+        for line in subtask2:
+            f.writelines(line + '\n')
+    with open(config['test_data_output_subtask3'], 'w') as f:
         for line in subtask3:
             f.writelines(line + '\n')
     print('post preprocess complete')
@@ -241,147 +292,6 @@ def generation(config):
     print(np.mean(valid_acc))
     print(np.mean(valid_recall))
     save_json(results, config['test_output_pred'])
-
-
-def _evaluate_simmc(config):
-    devtest_pred = load_json(config['test_output_pred'])
-    devtest_pred = list(map(lambda x: x.replace('. ', '.').replace(' : ', ':'), devtest_pred))
-
-    input_path_target = parse_flattened_results_from_file(config['data_folder'] + config['test_original_data'],
-                                                          'target')
-    input_path_pred = parse_flattened_results_from_flattened_file(devtest_pred)
-
-    report = evaluate_from_flat_list(input_path_target, input_path_pred)
-    save_json(report, config['test_output_pred'] + '___report.json')
-    print(report)
-
-
-def _evaluate_simmc_bleu(config):
-    input_path_pred = load_json(config['test_output_pred'])
-    input_path_target = load_json(config['data_folder'] + config['test_original_data'])
-    report = compute_metrics(input_path_target, input_path_pred)
-    save_json(report, config['test_output_pred'] + '___report.json')
-    print(report)
-
-
-def _evaluate_simmc_act(config):
-    devtest_pred = load_json(config['test_output_pred'])
-    devst_template = load_json(config['data_folder'] + config['test_original_data'])
-    devtest_pred = list(map(
-        lambda x: x.replace('. ', '.').replace(',', ' , ').replace(':', ' : ').replace('[', ' [ ').replace(']', ' ] '),
-        devtest_pred))
-
-    pred_act = parse_flattened_act_results_from_file(devtest_pred)
-    idx = 0
-    for dialog in devst_template['dialogs']:
-        for turn in dialog['dialog']:
-            turn['answer'] = pred_act[idx]
-            turn['pred'] = pred_act[idx]
-            idx += 1
-
-    save_json(devst_template, config['test_output_pred'] + '___report.json')
-
-
-def _evaluate_freebase(config):
-    gold_data = load_json(config['data_folder'] + config['test_data'])
-    gold_relation_paths = []
-    flag = False
-    for line in gold_data:
-        if 'relation_path' in line:
-            parsed_relation_path = line['relation_path'].replace(' ', '')
-            flag = True
-        elif line['relation_paths']:
-            parsed_relation_path = '<sep>'.join(rel for rel in line['relation_paths'][0])
-        else:
-            parsed_relation_path = ''
-        gold_relation_paths.append(parsed_relation_path)
-    devtest_pred = load_json(config['test_output_pred'])
-    devtest_pred = list(map(lambda x: x.replace('. ', '.').replace(' : ', ':'), devtest_pred))
-    acc = 0
-    for idx in range(len(gold_relation_paths)):
-        if not flag:
-            if gold_relation_paths[idx] == devtest_pred[idx] and gold_relation_paths[idx].strip():
-                acc += 1
-        else:
-            temp_acc = 0
-            cst_gold_relation_paths = list(filter(lambda x: x.strip(), gold_relation_paths[idx].split("<cst>")))
-            cst_pred_relation_paths = list(filter(lambda x: x.strip(), devtest_pred[idx].split("<cst>")))
-            for each_rp in cst_gold_relation_paths:
-                if each_rp in cst_pred_relation_paths:
-                    temp_acc += 1
-            if cst_gold_relation_paths:
-                temp_acc /= len(cst_gold_relation_paths)
-            else:
-                temp_acc = 0
-            acc += temp_acc
-    report = {'acc': acc / len(gold_relation_paths)}
-    print(report)
-    save_json(report, config['test_output_pred'] + '___report.json')
-
-
-def _evaluate_simmc_fusion(config):
-    devtest_pred = load_json(config['test_output_pred'])
-    devtest_pred_parsed = []
-    for e in devtest_pred:
-        tmp = []
-        if '<sep1>' in e:
-            first_spt = e.split('<sep1>')
-            if len(first_spt) > 0:
-                tmp.append(first_spt[0])
-            if len(first_spt) > 1 and '<sep2>' in first_spt[1]:
-                second_spt = first_spt[1].split('<sep2>')
-                if len(second_spt) >= 1:
-                    tmp.append(second_spt[0])
-                if len(second_spt) >= 2:
-                    tmp.append(second_spt[1])
-        else:
-            tmp.append(e)
-        devtest_pred_parsed.append(tmp)
-
-    gold_template, gold_data_file1, gold_data_file3, gold_data_file2 = config['test_original_data'].split(',')
-    devtest_pred1 = list(map(lambda x: x[0].strip(), devtest_pred_parsed))
-    devtest_pred3 = list(map(lambda x: x[1].strip() if len(x) > 1 else "", devtest_pred_parsed))
-    devtest_pred2 = list(map(lambda x: x[2].strip() if len(x) > 2 else "", devtest_pred_parsed))
-
-    # Evaluate SubTask 1
-    pred_task1 = load_json(config['data_folder'] + gold_template)
-    pred_act = parse_flattened_act_results_from_file(devtest_pred1)
-    idx = 0
-    for dialog in pred_task1['dialogs']:
-        for turn in dialog['dialog']:
-            turn['answer'] = pred_act[idx]
-            turn['pred'] = pred_act[idx]
-            idx += 1
-    pred_task1 = pred_task1['dialogs']
-
-    dialogs_gt1 = json.load(open(config['data_folder'] + gold_data_file1, 'r'))
-    is_furniture = 'furniture' in gold_data_file1
-    report1 = parse_action_results_from_data(dialogs_gt1, pred_task1, is_furniture, 'answer')
-
-    # Evaluate SubTask 3
-    gold_task3 = parse_flattened_results_from_file(config['data_folder'] + gold_data_file3, 'target')
-    flattened_devtest_pred3 = parse_flattened_results_from_flattened_file(devtest_pred3)
-
-    report3 = evaluate_from_flat_list(gold_task3, flattened_devtest_pred3)
-
-    # Evaluate SubTask 2
-    gold_task2 = load_json(config['data_folder'] + gold_data_file2)
-    report2 = compute_metrics_by_data(gold_task2, devtest_pred2)
-
-    report = {'report1': report1, 'report2': report2, 'report3': report3}
-    print(report)
-    save_json(report, config['test_output_pred'] + '___report.json')
-
-
-def evaluate(config):
-    if config['name'] == 'simmc':
-        return _evaluate_simmc(config)
-    elif config['name'] == 'simmc-act':
-        return _evaluate_simmc_act(config)
-    elif config['name'] == 'simmc-fusion':
-        return _evaluate_simmc_fusion(config)
-    else:
-        return _evaluate_freebase(config)
 
 
 def train(config):
@@ -466,20 +376,32 @@ if __name__ == '__main__':
     parser.add_argument('--dev_data_tgt_subtask3', type=str, required=False,
                         help='dev data target for subtask #3')
     parser.add_argument('--test_data_src', type=str, required=False,
-                        help='dev data source file')
+                        help='test data source file')
     parser.add_argument('--test_data_tgt_subtask1', type=str, required=False,
-                        help='dev data target for subtask #1')
+                        help='test data target for subtask #1')
     parser.add_argument('--test_data_tgt_subtask2', type=str, required=False,
-                        help='dev data target for subtask #2')
+                        help='test data target for subtask #2')
     parser.add_argument('--test_data_tgt_subtask3', type=str, required=False,
-                        help='dev data target for subtask #3')
+                        help='test data target for subtask #3')
+    parser.add_argument('--test_data_output_subtask1', type=str, required=False,
+                        help='test data output for subtask #1')
+    parser.add_argument('--test_data_output_subtask2', type=str, required=False,
+                        help='test data output for subtask #2')
+    parser.add_argument('--test_data_output_subtask3', type=str, required=False,
+                        help='test data output for subtask #3')
+    parser.add_argument('--test_data_original_file', type=str, required=False,
+                        help='test data original file json')
     parser.add_argument('--test_output_pred', type=str, required=False,
                         help='output prediction for subtask #1,#3,#2')
     parser.add_argument('--encoder_decoder_model_name_or_path', type=str, required=True,
                         help='model name')
+    parser.add_argument('--domain', type=str, required=False,
+                        help='domain name')
     parser.add_argument('--learning_rate', default=1e-5, type=float, required=False,
                         help='learning rate')
-    parser.add_argument("--load_model_index", type=int, default=0, required=False, help="which index of the model to load")
+    parser.add_argument("--load_model_index", type=int, default=0, required=False,
+                        help="which index of the model to load")
+
     parser.add_argument("--local_rank", type=int, default=0, help="For distributed training: local_rank")
     parser.add_argument("--batch_size", type=int, required=False, help="batch size for training")
     parser.add_argument("--test_batch_size", type=int, default=100, required=False, help="test batch size")
@@ -493,13 +415,18 @@ if __name__ == '__main__':
     cfg['test_batch_size'] = args.test_batch_size
     device = torch.device("cuda", args.local_rank)
     cfg['device'] = device
+    cfg['domain'] = args.domain
+    cfg['test_data_original_file'] = args.test_data_original_file
     cfg['save_model_file'] = '%s_%d' % (cfg['save_model_file'], args.load_model_index)
     cfg['load_model_file'] = '%s_%d' % (cfg['load_model_file'], args.load_model_index)
     cfg['encoder_decoder_model_name_or_path'] = args.encoder_decoder_model_name_or_path
     cfg['test_output_pred'] = '%s_%d' % (args.test_output_pred, args.load_model_index)
+    cfg['test_data_output_subtask1'] = '%s_%d' % (args.test_data_output_subtask1, args.load_model_index)
+    cfg['test_data_output_subtask2'] = '%s_%d' % (args.test_data_output_subtask2, args.load_model_index)
+    cfg['test_data_output_subtask3'] = '%s_%d' % (args.test_data_output_subtask3, args.load_model_index)
     if 'train' == args.action:
         train(cfg)
     elif 'generate' == args.action:
         generation(cfg)
-    elif 'evaluate' == args.action:
-        evaluate(cfg)
+    elif 'postprocess' == args.action:
+        post_process(cfg)

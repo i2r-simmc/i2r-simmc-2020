@@ -12,11 +12,11 @@ import json
 import numpy as np
 from nltk.tokenize import word_tokenize
 
-import loaders
-from tools import support, torch_support
-from tools.action_evaluation import evaluate_action_prediction
-from tools.response_evaluation import evaluate_response_generation
-from tools.retrieval_evaluation import evaluate_response_retrieval
+import mm_action_prediction.loaders as loaders
+from mm_action_prediction.tools import support, torch_support
+from mm_action_prediction.tools.action_evaluation import evaluate_action_prediction
+from mm_action_prediction.tools.response_evaluation import evaluate_response_generation
+from mm_action_prediction.tools.retrieval_evaluation import evaluate_response_retrieval
 
 
 class DataloaderSIMMC(loaders.LoaderParent):

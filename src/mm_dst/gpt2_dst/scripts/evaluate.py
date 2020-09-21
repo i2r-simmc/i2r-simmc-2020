@@ -9,8 +9,8 @@
 """
 import argparse
 import json
-from evaluate_dst.gpt2_dst.utils.convert import parse_flattened_results_from_file
-from evaluate_dst.utils.evaluate_dst import evaluate_from_flat_list
+from mm_dst.gpt2_dst.utils.convert import parse_flattened_results_from_file
+from mm_dst.utils.evaluate_dst import evaluate_from_flat_list
 
 
 if __name__ == '__main__':
