@@ -13,6 +13,7 @@ from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 
+from transformers import BertModel, BertConfig, BertTokenizer, BertTokenizerFast, AutoTokenizer
 from transformers import BartModel, BartConfig, BartTokenizer
 from transformers import AutoTokenizer
 from transformers.modeling_bart import BartLMHeadModel
@@ -170,7 +171,7 @@ if __name__ == '__main__':
     MODEL_CLASSES = {
         'bart': (BartConfig, BartTokenizer, BartModel)
     }
-    ConfigClass, TokenizerClass, BartModelClass = MODEL_CLASSES[args.model_type]
+    ConfigClass, TokenizerClass, BertModelClass = MODEL_CLASSES[args.model_type]
 
     ## init dataset and bart model
     tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large", do_lower_case=True, clean_text=False)
@@ -220,15 +221,15 @@ if __name__ == '__main__':
         print('Loading parameters from', previous_model_file)
         log_wf.write('Loading parameters from %s' % previous_model_file + '\n')
         model_state_dict = torch.load(previous_model_file, map_location="cpu")
-        bart = BartModelClass.from_pretrained(args.bart_model, state_dict=model_state_dict)
+        bart = BertModelClass.from_pretrained(args.bart_model, state_dict=model_state_dict)
         del model_state_dict
     else:
-        bart = BartModelClass(bart_config)
+        bert = BertModelClass(bart_config)
 
     if args.architecture == 'poly':
-        model = PolyEncoder(bart_config, bart=bart, poly_m=args.poly_m)
+        model = PolyEncoder(bart_config, bert=bart, poly_m=args.poly_m)
     elif args.architecture == 'bi':
-        model = BiEncoder(bart_config, bart=bart)
+        model = BiEncoder(bart_config, bert=bart)
     else:
         raise Exception('Unknown architecture.')
     model.resize_token_embeddings(len(tokenizer)) 
