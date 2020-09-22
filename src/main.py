@@ -60,12 +60,8 @@ def _get_enc_dec_tokenizers(config, model):
                 'additional_special_tokens': ['<SOM>', '<EOM>']
             })
             tokenizer_dec = AutoTokenizer.from_pretrained(dec_model, cache_dir=cache_dir)
-            if os.path.exists(config['data_folder'] + config['decoder_special_token']):
-                with open(config['data_folder'] + config['decoder_special_token'], "rb") as handle:
-                    special_tokens_dict = json.load(handle)
-                    num_added_toks = tokenizer_dec.add_special_tokens(special_tokens_dict)
             tokenizer_dec.add_special_tokens({
-                'additional_special_tokens': ['<sep>', '<cls>', '<end>', '<unk>', '<pad>']
+                'additional_special_tokens': ['<sep>', '<cls>', '<end>', '<unk>', '<pad>', '<SOM>', '<EOM>']
             })
             if config['name'] == 'simmc-fusion':
                 tokenizer_dec.add_special_tokens({
