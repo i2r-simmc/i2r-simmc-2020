@@ -13,6 +13,8 @@ from transformers.modeling_encoder_decoder import EncoderDecoderModel
 from model import BartLMHeadModel
 from transformer_data_loader import SimmcFusionDataset
 from util import get_config, load_json, save_json
+from mm_dst.gpt2_dst.utils.convert import parse_flattened_result
+
 
 START_BELIEF_STATE = '=> Belief State :'
 END_OF_BELIEF = '<EOB>'
@@ -208,16 +210,42 @@ def post_process(config):
             'predictions': predictions
         })
 
-    # Compatible with official simmc evaluation script
-    subtask3 = list(map(lambda x: '%s %s %s' % (START_BELIEF_STATE, x, END_OF_BELIEF), subtask3))
+    subtask3_dialog_output = []
+    count = 0
+    for d in original_data['dialogue_data']:
+        dialogue = []
+        for turn in d['dialogue']:
+            intent_slot_str = '%s %s %s' % (START_BELIEF_STATE, subtask3[count].strip(), END_OF_BELIEF)
+            belief_state = parse_flattened_result(intent_slot_str)
+            dialogue.append({
+                'belief_state': belief_state
+            })
+            count += 1
+        subtask3_dialog_output.append({
+            'dialogue': dialogue
+        })
+    subtask3_dialog_output = {
+        'dialogue_data': subtask3_dialog_output
+    }
+
+    subtask2_dialog_output = []
+    count = 0
+    for d in original_data['dialogue_data']:
+        predictions = []
+        for turn in d['dialogue']:
+            response = subtask2[count].strip()
+            predictions.append({
+                'response': response
+            })
+            count += 1
+        subtask2_dialog_output.append({
+            'dialog_id': d['dialogue_idx'],
+            'predictions': predictions
+        })
 
     json.dump(subtask1_dialog_output, open(config['test_data_output_subtask1'], 'w'))
-    with open(config['test_data_output_subtask2'], 'w') as f:
-        for line in subtask2:
-            f.writelines(line + '\n')
-    with open(config['test_data_output_subtask3'], 'w') as f:
-        for line in subtask3:
-            f.writelines(line + '\n')
+    json.dump(subtask2_dialog_output, open(config['test_data_output_subtask2'], 'w'))
+    json.dump(subtask3_dialog_output, open(config['test_data_output_subtask3'], 'w'))
     print('post preprocess complete')
 
 

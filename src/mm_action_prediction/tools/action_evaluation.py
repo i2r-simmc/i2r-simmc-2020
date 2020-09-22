@@ -4,10 +4,20 @@ Author(s): Satwik Kottur
 """
 
 
+from absl import app, flags
 import collections
 import json
-import argparse
+
 import numpy as np
+
+
+FLAGS = flags.FLAGS
+flags.DEFINE_string(
+    "action_json_path", "data/furniture_api_calls.json", "Ground truth API calls"
+)
+flags.DEFINE_string(
+    "model_output_path", None, "Action API predictions by the model"
+)
 
 
 IGNORE_ATTRIBUTES = [
@@ -40,8 +50,8 @@ def evaluate_action_prediction(gt_actions, model_actions):
             # Record matches and confusion.
             matches["action"].append(action_match)
             matches["perplexity"].append(
-                0.0
-                # TODO: HX: FIX this before commit
+                # TODO: fix it
+                0.0,
                 # round_datum["action_log_prob"][gt_datum["action"]]
             )
             confusion_dict[gt_datum["action"]].append(round_datum["action"])
@@ -107,32 +117,16 @@ def evaluate_action_prediction(gt_actions, model_actions):
     }
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--input_path_target',
-                        help='path for target response json (*.json)')
-    parser.add_argument('--input_path_predicted',
-                        help='path for model prediction output, line-separated format (.txt)')
-    parser.add_argument('--output_path_report',
-                        help='path for saving evaluation summary (.json)')
-
-    args = parser.parse_args()
-    input_path_target = args.input_path_target
-    input_path_predicted = args.input_path_predicted
-    output_path_report = args.output_path_report
-    print("Reading: {}".format(input_path_target))
-    with open(input_path_target, "r") as file_id:
+def main(_):
+    print("Reading: {}".format(FLAGS.action_json_path))
+    with open(FLAGS.action_json_path, "r") as file_id:
         gt_actions = json.load(file_id)
-    print("Reading: {}".format(input_path_predicted))
-    with open(input_path_predicted, "r") as file_id:
+    print("Reading: {}".format(FLAGS.model_output_path))
+    with open(FLAGS.model_output_path, "r") as file_id:
         model_actions = json.load(file_id)
     action_metrics = evaluate_action_prediction(gt_actions, model_actions)
-    del action_metrics['confusion_matrix']
-    # Save report
-    with open(output_path_report, 'w') as f_out:
-        json.dump(action_metrics, f_out)
     print(action_metrics)
 
 
 if __name__ == "__main__":
-    main()
+    app.run(main)
