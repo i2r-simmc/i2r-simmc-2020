@@ -11,12 +11,8 @@ from transformers import AutoTokenizer, AdamW, get_linear_schedule_with_warmup
 from transformers.modeling_encoder_decoder import EncoderDecoderModel
 
 from model import BartLMHeadModel
-from preprocessing.convert_simmc import parse_flattened_results_from_file, parse_flattened_act_results_from_file, \
-    parse_flattened_results_from_flattened_file
 from transformer_data_loader import SimmcFusionDataset
 from util import get_config, load_json, save_json
-from utils.convert_utils import parse_action_results_from_data
-from utils.evaluation_dst import evaluate_from_flat_list
 
 START_BELIEF_STATE = '=> Belief State :'
 END_OF_BELIEF = '<EOB>'
@@ -184,7 +180,7 @@ def post_process(config):
             action = action_attribute_str[:idx_split_action].strip()
             attributes = action_attribute_str[idx_split_action:].replace('[', '').replace(']', '').strip()
             if is_fashion:
-                attributes = list(filter(lambda x: x, map(str.strip, attributes.split(','))))
+                attributes = list(filter(lambda x: x, map(str.strip, attributes.split(' '))))
                 predictions.append({
                     'turn_idx': turn['turn_idx'],
                     'action': action,
