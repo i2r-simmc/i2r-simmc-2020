@@ -224,7 +224,7 @@ if __name__ == '__main__':
         bart = BertModelClass.from_pretrained(args.bart_model, state_dict=model_state_dict)
         del model_state_dict
     else:
-        bert = BertModelClass(bart_config)
+        bart = BertModelClass(bart_config)
 
     if args.architecture == 'poly':
         model = PolyEncoder(bart_config, bert=bart, poly_m=args.poly_m)
