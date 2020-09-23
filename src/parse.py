@@ -15,7 +15,7 @@ with open('data/simmc_{}/{}_{}_dials_retrieval_candidates.json'.format(args.doma
     
 dial_index = 0
 
-print("Writing to " + '{}.txt'.format(args.mode))
+print("Writing to " + 'data/simmc_{}/{}.txt'.format(args.domain, args.mode))
 
 outfile = open('data/simmc_{}/{}.txt'.format(args.domain, args.mode), 'w')
 for content in data['dialogue_data']:
