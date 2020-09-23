@@ -25,8 +25,8 @@ python main.py \
     --encoder_decoder_model_name_or_path=$MODEL \
     --test_output_pred="$OUTPUT_ROOT"/output.json \
     --test_data_output_subtask1="$OUTPUT_ROOT"/output_subtask1.json \
-    --test_data_output_subtask2="$OUTPUT_ROOT"/output_subtask2.txt \
-    --test_data_output_subtask3="$OUTPUT_ROOT"/output_subtask3.txt \
+    --test_data_output_subtask2="$OUTPUT_ROOT"/output_subtask2.json \
+    --test_data_output_subtask3="$OUTPUT_ROOT"/output_subtask3.json \
     --test_data_original_file="$ROOT"/${DOMAIN}_${TEST_SPLIT}_dials.json \
     --domain=$DOMAIN \
     --local_rank=$LOCAL_RANK \
