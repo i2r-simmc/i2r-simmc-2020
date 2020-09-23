@@ -1,1 +1,1 @@
-# Put furniture datasets in this folder
+Put furniture datasets in this folder
