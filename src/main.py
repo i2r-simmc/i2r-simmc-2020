@@ -333,7 +333,7 @@ def generation(config):
                         break
                 if flag:
                     action_token_index = j
-                    action_log_prob = {action_token: action_logits[i, action_token_index, k].item() for k, action_token
+                    action_log_prob = {action_token: action_logits[i, action_token_index-1, k].item() for k, action_token
                                        in enumerate(sorted_actions)}
                     action_log_probs.append(action_log_prob)
             result_lines = [{
