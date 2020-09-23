@@ -2,9 +2,14 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-python3 run.py --bart_model bart-base/ --output_dir data/simmc_fashion/ --train_dir data/simmc_fashion/ --use_pretrain --architecture bi --eval 
-python3 run.py --bart_model bart-base/ --output_dir data/simmc_fashion/ --train_dir data/simmc_fashion/ --use_pretrain --architecture poly --poly_m 16 --eval
+DOMAIN="fashion"
+#DOMAIN="furniture"
+TRAIN_DIR="./data/simmc_${DOMAIN}/"
 
+#ARCHITECTURE="bi"
+#ARCHITECTURE="poly"
+POLY_M=16
 
-python3 run.py --bart_model bart-base/ --output_dir data/simmc_furniture/ --train_dir data/simmc_furniture --use_pretrain --architecture bi --eval
-python3 run.py --bart_model bart-base/ --output_dir data/simmc_furniture/ --train_dir data/simmc_furniture --use_pretrain --architecture poly --poly_m 16 --eval
+python3 run.py --bart_model bart-base/ --output_dir ${TRAIN_DIR} --train_dir ${TRAIN_DIR} --use_pretrain --architecture bi --eval 
+python3 run.py --bart_model bart-base/ --output_dir ${TRAIN_DIR} --train_dir ${TRAIN_DIR} --use_pretrain --architecture poly --poly_m ${POLY_M} --eval
+
