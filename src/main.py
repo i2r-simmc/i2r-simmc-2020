@@ -211,6 +211,7 @@ def post_process(config):
                 predictions.append({
                     'turn_idx': turn['turn_idx'],
                     'action': action,
+                    'action_log_prob': action_log_probs[count],
                     'attributes': attribute_dict
                 })
             count += 1
