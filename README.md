@@ -7,7 +7,8 @@ Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), 
 # Data pre-processing
 - Place data files under data/simmc_fasion,furniture folders
 - Edit preprocessing.sh ($DOMAIN='fashion' or 'furniture')
-- $ bash preprocessing.sh 
+- $ cd ..
+- $ bash src/preprocessing.sh 
 
 # Training and evaluation
 - Edit train_all_models.sh and evaluate_all_models.sh ($DOMAIN='fashion' or 'furniture', $TESTSET='devtest' or 'test-std')
