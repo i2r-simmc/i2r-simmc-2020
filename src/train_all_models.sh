@@ -9,12 +9,12 @@ TESTSET="devtest"
 #TESTSET="test-std"
 
 
-if [$DOMAIN=="fashion"]
+if [ $DOMAIN == "fashion" ]
 then
     python3 run.py --bart_model bart-base/ --output_dir ${TRAIN_DIR} --train_dir ${TRAIN_DIR} --use_pretrain --architecture bi 
     #python3 run.py --bart_model bart-base/ --output_dir data/simmc_fashion/ --train_dir data/simmc_fashion/ --domain fashion --use_pretrain --architecture bi 
     #python3 run.py --bart_model bart-base/ --output_dir data/simmc_fashion/ --train_dir data/simmc_fashion/ --domain fashion --use_pretrain --architecture poly --poly_m 16
-elif [$DOMAIN=="furniture"]
+elif [ $DOMAIN == "furniture" ]
 then
     python3 run.py --bart_model bart-base/ --output_dir data/simmc_furniture/ --train_dir data/simmc_furniture --domain furniture --use_pretrain --architecture bi 
     python3 run.py --bart_model bart-base/ --output_dir data/simmc_furniture/ --train_dir data/simmc_furniture --domain furniture --use_pretrain --architecture poly --poly_m 16
