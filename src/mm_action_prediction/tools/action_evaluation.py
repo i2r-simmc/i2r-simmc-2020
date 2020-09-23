@@ -50,9 +50,7 @@ def evaluate_action_prediction(gt_actions, model_actions):
             # Record matches and confusion.
             matches["action"].append(action_match)
             matches["perplexity"].append(
-                # TODO: fix it
-                0.0,
-                # round_datum["action_log_prob"][gt_datum["action"]]
+                round_datum["action_log_prob"][gt_datum["action"]]
             )
             confusion_dict[gt_datum["action"]].append(round_datum["action"])
 

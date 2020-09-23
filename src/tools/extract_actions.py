@@ -660,6 +660,8 @@ def extract_actions(input_json_file, save_root, furniture_db, subtask):
     """
     # Read the raw data.
     print("Reading: {}".format(input_json_file))
+    if not os.path.exists(input_json_file):
+        return
     with open(input_json_file, "r") as file_id:
         data = json.load(file_id)
 

@@ -165,6 +165,8 @@ def post_process(config):
         return line.strip(), "", ""
 
     input_path_pred = load_json(config['test_output_pred'])
+    action_log_probs = list(map(lambda x: x['log_probs'], input_path_pred))
+    input_path_pred = list(map(lambda x: x['result'], input_path_pred))
     input_path_pred = list(map(_split, input_path_pred))
     is_fashion = config['domain'] == 'fashion'
 
@@ -188,6 +190,7 @@ def post_process(config):
                 predictions.append({
                     'turn_idx': turn['turn_idx'],
                     'action': action,
+                    'action_log_prob': action_log_probs[count],
                     'attributes': {
                         'attributes': attributes
                     }
@@ -293,8 +296,6 @@ def generation(config):
         test_dataset, sampler=test_sampler, batch_size=config['test_batch_size'], collate_fn=collate
     )
     results = []
-    action_log_probs = []
-    action_perplexities = []
     vocab_dict = tokenizer_dec.get_vocab()
     with open(os.path.join(config['model_metainfo_path']), 'r') as file_id:
         action_metainfo = json.load(file_id)["actions"]
@@ -308,6 +309,7 @@ def generation(config):
     action_vocab_ids = action_vocab_ids.to(config['device'])
     with torch.no_grad():
         for step, batch in enumerate(tqdm(test_dataloader, desc="Test Iteration")):
+            action_log_probs = []
             src = batch[0].to(config['device'])
             src_mask = batch[1].to(config['device'])
             tgt = batch[2].to(config['device'])
@@ -319,7 +321,6 @@ def generation(config):
             decoded = tokenizer_dec.batch_decode(generated)
             pred_rp = _clean_special_characters(decoded, tokenizer_dec, remove_space=config['remove_space'] if \
                 'remove_space' in config else True)
-            results += pred_rp
             action_logits = torch.index_select(logits, -1, action_vocab_ids)
             action_logits = torch.nn.functional.log_softmax(action_logits, dim=-1)
 
@@ -332,11 +333,14 @@ def generation(config):
                         break
                 if flag:
                     action_token_index = j
-                    ground_truth_action_token = tokenizer_dec.decode(tgt[i][action_token_index].item())
-                    action_log_prob = {action_token: action_logits[i, j, k].item() for k, action_token in
-                                       enumerate(sorted_actions)}
+                    action_log_prob = {action_token: action_logits[i, action_token_index, k].item() for k, action_token
+                                       in enumerate(sorted_actions)}
                     action_log_probs.append(action_log_prob)
-                    action_perplexities.append(action_log_prob[ground_truth_action_token])
+            result_lines = [{
+                'result': pred_rp[i],
+                'log_probs': action_log_probs[i]
+            } for i in range(len(generated))]
+            results += result_lines
     save_json(results, config['test_output_pred'])
 
 
@@ -451,8 +455,8 @@ if __name__ == '__main__':
                         help="which index of the model to load")
 
     parser.add_argument("--local_rank", type=int, default=0, help="For distributed training: local_rank")
-    parser.add_argument("--batch_size", type=int, required=False, help="batch size for training")
-    parser.add_argument("--test_batch_size", type=int, default=100, required=False, help="test batch size")
+    parser.add_argument("--batch_size", type=int, default=3, required=False, help="batch size for training")
+    parser.add_argument("--test_batch_size", type=int, default=20, required=False, help="test batch size")
 
     args = parser.parse_args()
     config_file = args.config_file

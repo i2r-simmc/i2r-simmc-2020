@@ -930,7 +930,7 @@ class BartModel(PretrainedBartModel):
 @add_start_docstrings(
     "The BART Model with a language modeling head. Can be used for summarization.", BART_START_DOCSTRING
 )
-class BartLMHeadModel(PretrainedBartModel, GenerationMixin):
+class BartLMHeadModel(GenerationMixin, PretrainedBartModel):
     base_model_prefix = "model"
     authorized_missing_keys = [r"final_logits_bias", r"encoder\.version", r"decoder\.version"]
 

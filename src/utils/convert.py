@@ -39,6 +39,8 @@ def convert_json_to_flattened(
         Output: line-by-line stringified representation of each turn
     """
 
+    if not os.path.exists(input_path_json):
+        return
     with open(input_path_json, 'r') as f_in:
         data = json.load(f_in)['dialogue_data']
 
