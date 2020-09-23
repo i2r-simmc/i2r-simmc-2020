@@ -22,7 +22,7 @@ fi
 #Furniture
 python3 parse.py --mode train --domain furniture
 python3 parse.py --mode dev --domain furniture
-python3 parse.py --mode --mode ${TESTSET} --domain furniture
+python3 parse.py --mode ${TESTSET} --domain furniture
 
 if [ TESTSET == "devtest" ]
 then
