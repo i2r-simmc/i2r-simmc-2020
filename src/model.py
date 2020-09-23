@@ -41,6 +41,7 @@ from modeling_outputs import (
     Seq2SeqSequenceClassifierOutput,
 )
 from transformers.modeling_utils import PreTrainedModel
+from generation_utils import GenerationMixin
 
 
 logger = logging.getLogger(__name__)
@@ -929,7 +930,7 @@ class BartModel(PretrainedBartModel):
 @add_start_docstrings(
     "The BART Model with a language modeling head. Can be used for summarization.", BART_START_DOCSTRING
 )
-class BartLMHeadModel(PretrainedBartModel):
+class BartLMHeadModel(PretrainedBartModel, GenerationMixin):
     base_model_prefix = "model"
     authorized_missing_keys = [r"final_logits_bias", r"encoder\.version", r"decoder\.version"]
 

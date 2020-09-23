@@ -72,6 +72,12 @@ def _get_enc_dec_tokenizers(config, model):
         else:
             tokenizer_enc = None
             tokenizer_dec = None
+    with open(os.path.join(config['model_metainfo_path']), 'r') as file_id:
+        action_metainfo = json.load(file_id)["actions"]
+    action_keys = list(map(lambda x: x['name'], action_metainfo))
+    tokenizer_dec.add_special_tokens({
+        'additional_special_tokens': action_keys
+    })
     tokenizer_dec.eos_token = '<end>'
     tokenizer_dec.cls_token = '<cls>'
     tokenizer_dec.unk_token = '<unk>'
@@ -287,12 +293,25 @@ def generation(config):
         test_dataset, sampler=test_sampler, batch_size=config['test_batch_size'], collate_fn=collate
     )
     results = []
+    action_log_probs = []
+    action_perplexities = []
+    vocab_dict = tokenizer_dec.get_vocab()
+    with open(os.path.join(config['model_metainfo_path']), 'r') as file_id:
+        action_metainfo = json.load(file_id)["actions"]
+    action_dict = {ii["name"]: ii["id"] for ii in action_metainfo}
+    sorted_actions = sorted(action_dict.keys(), key=lambda x: action_dict[x])
+    action_vocab_ids = []
+    for action_id, action in enumerate(sorted_actions):
+        action_vocab_id = vocab_dict[action]
+        action_vocab_ids.append(action_vocab_id)
+    action_vocab_ids = torch.tensor(action_vocab_ids)
+    action_vocab_ids = action_vocab_ids.to(config['device'])
     with torch.no_grad():
         for step, batch in enumerate(tqdm(test_dataloader, desc="Test Iteration")):
             src = batch[0].to(config['device'])
             src_mask = batch[1].to(config['device'])
             tgt = batch[2].to(config['device'])
-            generated = model.generate(src,
+            generated, logits = model.generate(src,
                                        max_length=200 if config['name'] == 'simmc-fusion' else 60,
                                        decoder_start_token_id=tokenizer_dec.pad_token_id,
                                        attention_mask=src_mask,
@@ -301,6 +320,23 @@ def generation(config):
             pred_rp = _clean_special_characters(decoded, tokenizer_dec, remove_space=config['remove_space'] if \
                 'remove_space' in config else True)
             results += pred_rp
+            action_logits = torch.index_select(logits, -1, action_vocab_ids)
+            action_logits = torch.nn.functional.log_softmax(action_logits, dim=-1)
+
+            for i in range(len(generated)):
+                flag = 0
+                for j in range(len(generated[i])):
+                    if generated[i][j].item() not in [tokenizer_enc.cls_token_id, tokenizer_enc.bos_token_id,
+                                                      tokenizer_enc.pad_token_id, tokenizer_enc.eos_token_id]:
+                        flag = 1
+                        break
+                if flag:
+                    action_token_index = j
+                    ground_truth_action_token = tokenizer_dec.decode(tgt[i][action_token_index].item())
+                    action_log_prob = {action_token: action_logits[i, j, k].item() for k, action_token in
+                                       enumerate(sorted_actions)}
+                    action_log_probs.append(action_log_prob)
+                    action_perplexities.append(action_log_prob[ground_truth_action_token])
     save_json(results, config['test_output_pred'])
 
 
@@ -403,6 +439,8 @@ if __name__ == '__main__':
                         help='test data original file json')
     parser.add_argument('--test_output_pred', type=str, required=False,
                         help='output prediction for subtask #1,#3,#2')
+    parser.add_argument('--model_metainfo_path', type=str, required=False,
+                        help='metainfo path for the model')
     parser.add_argument('--encoder_decoder_model_name_or_path', type=str, required=True,
                         help='model name')
     parser.add_argument('--domain', type=str, required=False,
@@ -427,6 +465,7 @@ if __name__ == '__main__':
     cfg['device'] = device
     cfg['domain'] = args.domain
     cfg['test_data_original_file'] = args.test_data_original_file
+    cfg['model_metainfo_path'] = args.model_metainfo_path
     cfg['save_model_file'] = '%s_%d' % (cfg['save_model_file'], args.load_model_index)
     cfg['load_model_file'] = '%s_%d' % (cfg['load_model_file'], args.load_model_index)
     cfg['encoder_decoder_model_name_or_path'] = args.encoder_decoder_model_name_or_path
