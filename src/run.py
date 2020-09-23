@@ -46,7 +46,7 @@ def export_results(results_out):
             output_dict['candidate_scores'].append(results_out[idx])
             idx+=1
         output.append(output_dict)
-    output_path = os.path.join(args.output_dir, '{}_{}_output.json'.format(args.architecture, args.poly_m))
+    output_path = os.path.join(args.output_dir, 'subtask2_retrieval_{}_{}_output.json'.format(args.architecture, args.poly_m))
     with open(output_path, 'w') as outfile:
         json.dump(output, outfile)
        
