@@ -4,19 +4,20 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode', type=str)
+parser.add_argument('--domain', type=str)
 args = parser.parse_args()
 
-with open('data/simmc_fashion/fashion_{}_dials.json'.format(args.mode)) as infile:
+with open('data/simmc_{}/{}_{}_dials.json'.format(args.domain, args.domain, args.mode)) as infile:
     data = json.load(infile)
     
-with open('data/simmc_fashion/fashion_{}_dials_retrieval_candidates.json'.format(args.mode)) as infile:
+with open('data/simmc_{}/{}_{}_dials_retrieval_candidates.json'.format(args.domain, args.domain, args.mode)) as infile:
     responses = json.load(infile)
     
 dial_index = 0
 
 print("Writing to " + '{}.txt'.format(args.mode))
 
-outfile = open('data/simmc_fashion/{}.txt'.format(args.mode), 'w')
+outfile = open('data/simmc_{}/{}.txt'.format(args.domain, args.mode), 'w')
 for content in data['dialogue_data']:
     turn_index = 0
     turns = content['dialogue']
