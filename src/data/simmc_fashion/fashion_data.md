@@ -1,1 +1,1 @@
-Put fashion datasets here
+Put fashion datasets in this folder
