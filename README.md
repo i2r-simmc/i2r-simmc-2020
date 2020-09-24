@@ -39,19 +39,27 @@ Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), 
 
 # Evaluation
 - First go to the src folder
+- $ cd src
+## Testing for all subtasks
+- Evaluate subtask#1,#2,#3 with specific domain
+- $ bash evaluate_all.sh \<domain\> <test_split_name>
+- Eg: $ bash evaluate_all.sh fashion devtest
+- The final report can be retrieved from `output/<domain>/prediction_report.csv`
+
+## (Optionally) Evaluation for subtasks separately
 ## Testing for SubTask #1
-- Evaluation for subtask#1 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test`
+- Evaluation for subtask#1 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
 - $ cd src/
 - $ bash evaluate_subtask1.sh \<domain\> <test_split_name>
 - Eg: $ bash evaluate_subtask1.sh fashion devtest
 - The results can be retrieved from `output/<domain>/output_subtask1.json`
 
 ## Testing for SubTask #2
-- Evaluation for subtask#2 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test`
+- Evaluation for subtask#2 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
 - $ cd src/
 - $ bash evaluate_subtask2.sh \<domain\> <test_split_name>
 - Eg: $ bash evaluate_subtask2.sh fashion devtest
-- The results will be printed to the shell output.
+- The results can be retrieved from `output/<domain>/output_subtask2.json`
 
 ## Testing for SubTask #3
 - Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test`
