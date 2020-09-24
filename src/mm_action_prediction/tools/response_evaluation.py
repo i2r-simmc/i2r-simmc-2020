@@ -63,8 +63,7 @@ def main(_):
         model_responses = json.load(file_id)
     bleu_score = evaluate_response_generation(gt_responses, model_responses)
     report = {'bleu': bleu_score}
-    if 'devtest' in FLAGS.data_json_path:
-        json.dump(report, open(FLAGS.output_path_report, 'w'))
+    json.dump(report, open(FLAGS.output_path_report, 'w'))
     print(bleu_score)
 
 

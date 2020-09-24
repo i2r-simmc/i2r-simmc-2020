@@ -128,8 +128,7 @@ def main(_):
     action_metrics = evaluate_action_prediction(gt_actions, model_actions)
     print(action_metrics)
     del action_metrics['confusion_matrix']
-    if 'devtest' in FLAGS.action_json_path:
-        json.dump(action_metrics, open(FLAGS.report_output_path, 'w'))
+    json.dump(action_metrics, open(FLAGS.report_output_path, 'w'))
 
 
 if __name__ == "__main__":

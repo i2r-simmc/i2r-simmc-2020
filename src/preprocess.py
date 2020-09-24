@@ -41,13 +41,13 @@ IGNORE_ATTRIBUTES = [
 
 
 def convert(data_path, generate_belief_state=False, use_multimodal_contexts=False,
-            use_action_prediction=False):
+            use_action_prediction=False, test_split_name='test-std'):
     """
         Input: JSON representation of the dialogs
         Output: line-by-line stringified representation of each turn
     """
     for category in ['fashion', 'furniture']:
-        for split in ['train', 'dev', 'devtest', 'test']:
+        for split in ['train', 'dev', 'devtest', test_split_name]:
             # Load the dialogue data
             if not os.path.exists(os.path.join(data_path, 'simmc_%s' % category,
                                                '%s_%s_dials.json' % (category, split))):
@@ -189,9 +189,15 @@ def main():
     parser.add_argument('--use_action_prediction',
                         action='store_true',
                         help='determine whether to use action prediction')
+    parser.add_argument('--test_split_name',
+                        help='split name of the testing data',
+                        required=False,
+                        default='test-std',
+                        type=str)
 
     args = parser.parse_args()
     data_path = args.data_path
+    test_split_name = args.test_split_name
     generate_belief_state = bool(args.generate_belief_state)
     use_multimodal_contexts = bool(args.use_multimodal_contexts)
     use_action_prediction = bool(args.use_action_prediction)
@@ -199,7 +205,8 @@ def main():
     # Convert the data into MTN friendly format
     convert(data_path, generate_belief_state=generate_belief_state,
             use_multimodal_contexts=use_multimodal_contexts,
-            use_action_prediction=use_action_prediction)
+            use_action_prediction=use_action_prediction,
+            test_split_name=test_split_name)
 
 
 if __name__ == '__main__':
