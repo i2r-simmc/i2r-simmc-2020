@@ -50,7 +50,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 ## Data pre-processing 
 - Edit src/preprocess_retrieval.sh (TESTSET=`devtest` or `test-std`)
 - $ bash src/preprocess_retrieval.sh 
-	- We assume that the files for the `test-std` set are named e.g. fashion_test-std_dials.json. If not, line 6 of preprocessing_retrieval.sh should be changed accordingly.
+	- We assume that the files for the `test-std` set are named e.g. fashion_test-std_dials.json. If not, lines 18 and 34 of preprocess_retrieval.sh should be changed accordingly.
 
 ## Training 
 - Edit src/retrieval/train_all_models.sh ($DOMAIN=`fashion` or `furniture`)
