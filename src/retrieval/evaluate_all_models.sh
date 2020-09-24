@@ -2,8 +2,8 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-#DOMAIN="fashion"
-DOMAIN="furniture"
+DOMAIN="fashion"
+#DOMAIN="furniture"
 TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 OUTPUT_DIR="../../output/${DOMAIN}/"
 MODEL_DIR="../../model/${DOMAIN}/best_model_fusion/"
