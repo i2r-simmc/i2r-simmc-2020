@@ -470,13 +470,7 @@ if __name__ == '__main__':
     cfg['domain'] = args.domain
     cfg['test_data_original_file'] = args.test_data_original_file
     cfg['model_metainfo_path'] = args.model_metainfo_path
-    cfg['save_model_file'] = '%s_%d' % (cfg['save_model_file'], args.load_model_index)
-    cfg['load_model_file'] = '%s_%d' % (cfg['load_model_file'], args.load_model_index)
     cfg['encoder_decoder_model_name_or_path'] = args.encoder_decoder_model_name_or_path
-    cfg['test_output_pred'] = '%s_%d' % (args.test_output_pred, args.load_model_index)
-    cfg['test_data_output_subtask1'] = '%s_%d' % (args.test_data_output_subtask1, args.load_model_index)
-    cfg['test_data_output_subtask2'] = '%s_%d' % (args.test_data_output_subtask2, args.load_model_index)
-    cfg['test_data_output_subtask3'] = '%s_%d' % (args.test_data_output_subtask3, args.load_model_index)
     if 'train' == args.action:
         train(cfg)
     elif 'generate' == args.action:

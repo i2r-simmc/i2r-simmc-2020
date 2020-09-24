@@ -1,10 +1,10 @@
 DOMAIN=$1
-INDEX=${2:-0}
 ROOT=../data/simmc_$DOMAIN
 OUTPUT_ROOT=../output/$DOMAIN
+TEST_SPLIT=${2:-devtest}
 
 # Evaluate for devtest dataset
 python -m mm_action_prediction.tools.response_evaluation \
-    --data_json_path="${ROOT}"/${DOMAIN}_devtest_dials.json \
-    --model_response_path="${OUTPUT_ROOT}"/output_subtask2.json_${INDEX} \
-    --report_output_path="${OUTPUT_ROOT}"/output_subtask2_report.json_${INDEX} \
+    --data_json_path="${ROOT}"/${DOMAIN}_${TEST_SPLIT}_dials.json \
+    --model_response_path="${OUTPUT_ROOT}"/output_subtask2.json \
+    --report_output_path="${OUTPUT_ROOT}"/output_subtask2_report.json \

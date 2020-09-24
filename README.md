@@ -38,22 +38,22 @@ Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), 
 # Evaluation
 - First go to the src folder
 ## Testing for SubTask #1
-- Evaluation for subtask#1 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`
+- Evaluation for subtask#1 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test`
 - $ cd src/
-- $ bash evaluate_subtask1.sh \<domain\> 
-- Eg: $ bash evaluate_subtask1.sh fashion
+- $ bash evaluate_subtask1.sh \<domain\> <test_split_name>
+- Eg: $ bash evaluate_subtask1.sh fashion devtest
 - The results can be retrieved from `output/<domain>/output_subtask1.json`
 
 ## Testing for SubTask #2
-- Evaluation for subtask#2 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`
+- Evaluation for subtask#2 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test`
 - $ cd src/
-- $ bash evaluate_subtask2.sh \<domain\> 
-- Eg: $ bash evaluate_subtask2.sh fashion
+- $ bash evaluate_subtask2.sh \<domain\> <test_split_name>
+- Eg: $ bash evaluate_subtask2.sh fashion devtest
 - The results will be printed to the shell output.
 
 ## Testing for SubTask #3
-- Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`
+- Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test`
 - $ cd src/
-- $ bash evaluate_subtask3.sh \<domain\> 
-- Eg: $ bash evaluate_subtask3.sh fashion
+- $ bash evaluate_subtask3.sh \<domain\> <test_split_name>
+- Eg: $ bash evaluate_subtask3.sh fashion devtest
 - The results can be retrieved from `output/<domain>/output_subtask3.json`
