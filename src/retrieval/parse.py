@@ -9,18 +9,18 @@ parser.add_argument('--domain', type=str)
 parser.add_argument('--train_dir', default = '../data/', type=str)
 args = parser.parse_args()
 
-with open(os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials.json'.format(args.domain, args.domain, args.mode)) as infile:
+with open(os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials.json'.format(args.domain, args.domain, args.mode))) as infile:
     data = json.load(infile)
     
-with open(os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials_retrieval_candidates.json'.format(args.domain, args.domain, args.mode)) as infile:
+with open(os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials_retrieval_candidates.json'.format(args.domain, args.domain, args.mode))) as infile:
     responses = json.load(infile)
     
 dial_index = 0
 
-print("Preprocessing " + os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials.json'.format(args.domain, args.domain, args.mode))
-print("Writing to " + os.path.join(args.train_dir, 'simmc_{}/{}.txt'.format(args.domain, args.mode))
+print("Preprocessing " + os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials.json'.format(args.domain, args.domain, args.mode)))
+print("Writing to " + os.path.join(args.train_dir, 'simmc_{}/{}.txt'.format(args.domain, args.mode)))
 
-outfile = open(os.path.join(args.train_dir, 'simmc_{}/{}.txt'.format(args.domain, args.mode), 'w')
+outfile = open(os.path.join(args.train_dir, 'simmc_{}/{}.txt'.format(args.domain, args.mode)), 'w')
 for content in data['dialogue_data']:
     turn_index = 0
     turns = content['dialogue']
