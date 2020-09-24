@@ -18,6 +18,9 @@ flags.DEFINE_string(
 flags.DEFINE_string(
     "model_output_path", None, "Action API predictions by the model"
 )
+flags.DEFINE_string(
+    "report_output_path", None, "Output report path for action API predictions by the model"
+)
 
 
 IGNORE_ATTRIBUTES = [
@@ -124,6 +127,9 @@ def main(_):
         model_actions = json.load(file_id)
     action_metrics = evaluate_action_prediction(gt_actions, model_actions)
     print(action_metrics)
+    del action_metrics['confusion_matrix']
+    if 'devtest' in FLAGS.action_json_path:
+        json.dump(action_metrics, open(FLAGS.report_output_path, 'w'))
 
 
 if __name__ == "__main__":
