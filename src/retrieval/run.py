@@ -147,7 +147,7 @@ if __name__ == '__main__':
     parser.add_argument("--output_dir", required=True, type=str)
     parser.add_argument("--model_out", default = '../../model/fashion', type = str)
     parser.add_argument("--train_dir", default='../data/simmc_fashion', type=str)
-    parser.add_arguement("--testset", default='devtest', type=str)
+    parser.add_argument("--testset", default='devtest', type=str)
     parser.add_argument("--domain", default = 'fashion', type=str)
     parser.add_argument("--use_pretrain", action="store_true")
     parser.add_argument("--architecture", required=True, type=str, help='[poly, bi]')
