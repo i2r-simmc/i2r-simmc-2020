@@ -4,7 +4,7 @@
 
 #DOMAIN="fashion"
 DOMAIN="furniture"
-TRAIN_DIR="../data/simmc_${DOMAIN}/"
+TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 OUTPUT_DIR="../../output/${DOMAIN}/"
 MODEL_DIR="../../model/${DOMAIN}"
 
