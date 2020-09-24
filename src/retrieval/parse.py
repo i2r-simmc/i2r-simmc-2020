@@ -6,7 +6,7 @@ import os
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode', type=str)
 parser.add_argument('--domain', type=str)
-parser.add_argument('--train_dir', default = '../data/", type = str)
+parser.add_argument('--train_dir', default = '../data/', type=str)
 args = parser.parse_args()
 
 with open(os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials.json'.format(args.domain, args.domain, args.mode)) as infile:
