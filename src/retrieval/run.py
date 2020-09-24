@@ -42,8 +42,11 @@ def export_results(results_out):
     idx = 0
     for dial in candidates['retrieval_candidates']:
         output_dict = {"dialog_id": dial['dialogue_idx'], "candidate_scores": []}
-        for turn in dial['retrieval_candidates']:
-            output_dict['candidate_scores'].append(results_out[idx])
+        for turn_num, turn in enumerate(dial['retrieval_candidates']):
+            output_turn_dict = {"scores": [], "turn_id": turn_num} 
+            output_turn_dict["scores"] = results_out[idx]
+            #output_dict['candidate_scores'].append(results_out[idx])
+            output_dict["candidate_scores"].append(output_turn_dict)
             idx+=1
         output.append(output_dict)
     output_path = os.path.join(args.output_dir, 'subtask2_retrieval_{}_{}_output.json'.format(args.architecture, args.poly_m))
@@ -124,7 +127,8 @@ if __name__ == '__main__':
     parser.add_argument("--eval", action="store_true")
     parser.add_argument("--model_type", default='bart', type=str)
     parser.add_argument("--output_dir", required=True, type=str)
-    parser.add_argument("--train_dir", default='data/simmc_fashion', type=str)
+    parser.add_argument("--model_out", default = '../../model/fashion', type = str)
+    parser.add_argument("--train_dir", default='../data/simmc_fashion', type=str)
     parser.add_argument("--domain", default = 'fashion', type=str)
     parser.add_argument("--use_pretrain", action="store_true")
     parser.add_argument("--architecture", required=True, type=str, help='[poly, bi]')
@@ -209,7 +213,7 @@ if __name__ == '__main__':
     log_wf = open(os.path.join(args.output_dir, 'log.txt'), 'a', encoding='utf-8')
     print (args, file=log_wf)
 
-    state_save_path = os.path.join(args.output_dir, '{}_{}_pytorch_model.bin'.format(args.architecture, args.poly_m))
+    state_save_path = os.path.join(args.model_out, '{}_{}_pytorch_model.bin'.format(args.architecture, args.poly_m))
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     ########################################
