@@ -1,9 +1,9 @@
 # Train Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
 # Select domain as appropriate
-#DOMAIN="fashion"
-DOMAIN="furniture"
-TRAIN_DIR="../../data/simmc_${DOMAIN}/"
+DOMAIN="fashion"
+#DOMAIN="furniture"
+TRAIN_DIR="../data/simmc_${DOMAIN}/"
 OUTPUT_DIR="../../output/${DOMAIN}/"
 MODEL_DIR="../../model/${DOMAIN}"
 
