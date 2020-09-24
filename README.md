@@ -31,7 +31,7 @@ Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), 
 - Generate model output with specific domain, domain can be `fashion` and `furniture` 
 - $ bash generate.sh \<domain\>
 - Optionally, you can generate with specified setting including gpu_id, testing batch size and testing split name
-- Testing split name can be `devtest` or `test` based on the file you want to test. 
+- Testing split name can be `devtest` or `test-std` based on the file you want to test. 
 - $ bash generate.sh \<domain\> <gpu_id> <learning_rate> <testing_split_name>
 - Eg: $ bash generate.sh fashion 0 20 devtest
 - The default testing batch size is 20, if you encounter CUDA memory issue, please reduce testing batch size.
@@ -62,7 +62,7 @@ Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), 
 - The results can be retrieved from `output/<domain>/output_subtask2.json`
 
 ## Testing for SubTask #3
-- Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test`
+- Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
 - $ cd src/
 - $ bash evaluate_subtask3.sh \<domain\> <test_split_name>
 - Eg: $ bash evaluate_subtask3.sh fashion devtest
