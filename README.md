@@ -2,7 +2,6 @@ Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), 
 
 # Installation
 - $ git clone https://github.com/i2r-simmc/i2r-simmc-2020.git && cd i2r-simmc-2020
-- $ git lfs pull
 - $ pip install -r requirements.txt
 - $ mkdir model && mkdir model/fashion && mkdir model/furniture
 - $ mkdir output && mkdir output/fashion && mkdir output/furniture
