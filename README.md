@@ -30,10 +30,10 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 
 # Training (joint learning model)
 - $ cd src
-- $ bash train.sh <domain>
-	- <domain> is either `fashion` or `furniture`
+- $ bash train.sh \<domain\>
+	- \<domain\> is either `fashion` or `furniture`
 	- Optionally, you can train `fashion` and `furniture` dataset with specified setting including gpu_id, learning_rate and batch_size
-		- $ bash train.sh <domain> <gpu_id> <learning_rate> <batch_size>
+		- $ bash train.sh \<domain\> <gpu_id> <learning_rate> <batch_size>
 		- e.g. $ bash train.sh fashion 0 1e-5 3
 		- The default learning_rate is 1e-5, default batch size is 3, if you encounter CUDA memory issue, please reduce batch size to 2 or 1.
 
@@ -44,13 +44,13 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 
 # Evaluation (joint learning model)
 - $ cd src/
-- $ bash generate.sh <domain>
+- $ bash generate.sh \<domain\>
 	- Optionally, you can generate with specified setting including gpu_id, testing batch size and testing split name
 	- Testing split name can be `devtest` or `test-std` based on the file you want to test.
-	- $ bash generate.sh <domain> <gpu_id> <learning_rate> <testing_split_name>
+	- $ bash generate.sh \<domain\> <gpu_id> <learning_rate> <testing_split_name>
 	- e.g. $ bash generate.sh fashion 0 20 devtest
 	- The default testing batch size is 20, if you encounter CUDA memory issue, please reduce testing batch size.
-	- After the generation, the generated files for subtask #1,#2,#3 can be found in output/<domain>/output_subtask_1.json,output/<domain>/output_subtask_2.json,output/<domain>/output_subtask_3.json respectively.
+	- After the generation, the generated files for subtask #1,#2,#3 can be found in output/\<domain\>/output_subtask_1.json,output/\<domain\>/output_subtask_2.json,output/\<domain\>/output_subtask_3.json respectively.
 
 # Evaluation (retrieval model)
 - Edit src/retrieval/evaluate_all_models.sh ($DOMAIN=`fashion` or `furniture`, $TESTSET=`devtest` or `test-std`)
