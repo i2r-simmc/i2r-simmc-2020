@@ -3,6 +3,7 @@ import time
 import json
 import shutil
 import argparse
+import csv
 import numpy as np
 from tqdm import tqdm
 import random
@@ -34,7 +35,7 @@ def set_seed(args):
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
 
-def export_results(results_out):
+def export_scores_json(results_out):
     
     with open(os.path.join(args.train_dir, 'candidates.json')) as f:
         candidates = json.load(f)
@@ -51,8 +52,20 @@ def export_results(results_out):
         output.append(output_dict)
     output_path = os.path.join(args.output_dir, 'subtask2_retrieval_{}_{}_output.json'.format(args.architecture, args.poly_m))
     with open(output_path, 'w') as outfile:
-        json.dump(output, outfile)
-       
+        json.dump(output, outfile)    
+
+def export_results(results)
+    results_path = os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m)
+    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)                           
+    if not os.path.isfile(results_path):
+        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m), 'w') as csvfile:
+            filewriter.writerow(['Model', 'r@1', 'r@5', 'r@10', 'Mean Rank', 'MRR'])
+            filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['R1'], results['R5'], results['R10'], results['MR'], results['MRR']])
+    else:
+        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m), 'a') as csvfile:
+            filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['R1'], results['R5'], results['R10'], results['MR'], results['MRR']])
+
+                  
 def eval_running_model(dataloader, test=False):
     loss_fct = CrossEntropyLoss()
     model.eval()
@@ -115,7 +128,8 @@ def eval_running_model(dataloader, test=False):
             'MRR': np.mean(mrr),
         }
     if test:
-        export_results(list(results_out))
+        export_scores_json(list(results_out))
+        export_results(result)
         
     return result
 
