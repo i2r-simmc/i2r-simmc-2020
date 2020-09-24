@@ -58,11 +58,11 @@ def export_results(results):
     results_path = os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m))
     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)                           
     if not os.path.isfile(results_path):
-        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m), 'w') as csvfile:
+        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m)), 'w') as csvfile:
             filewriter.writerow(['Model', 'r@1', 'r@5', 'r@10', 'Mean Rank', 'MRR'])
             filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['R1'], results['R5'], results['R10'], results['MR'], results['MRR']])
     else:
-        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m), 'a') as csvfile:
+        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m)), 'a') as csvfile:
             filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['R1'], results['R5'], results['R10'], results['MR'], results['MRR']])
 
                   
