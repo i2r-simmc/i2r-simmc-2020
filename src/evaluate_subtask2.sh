@@ -7,4 +7,4 @@ TEST_SPLIT=${2:-devtest}
 python -m mm_action_prediction.tools.response_evaluation \
     --data_json_path="${ROOT}"/${DOMAIN}_${TEST_SPLIT}_dials.json \
     --model_response_path="${OUTPUT_ROOT}"/output_subtask2.json \
-    --report_output_path="${OUTPUT_ROOT}"/output_subtask2_report.json \
+    --output_path_report="${OUTPUT_ROOT}"/output_subtask2_report.json \
