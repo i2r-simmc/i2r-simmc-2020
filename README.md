@@ -9,6 +9,9 @@ Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), 
 # Data pre-processing
 - Place data files under data/simmc_fasion,furniture folders
 - The testing data files should follow the same naming convention of training, dev and devtest dataset.
+- Place the predefined action meta info from the official simmc repo to the data/simmc_fashion and data/simmc_furniture/ respectively
+    - $ cp simmc/mm_action_prediction/models/fashion_model_metainfo.json data/simmc_fashion/
+    - $ cp simmc/mm_action_prediction/models/furniture_model_metainfo.json data/simmc_furniture/
 - $ cd src/
 - $ bash preprocess.sh
 
