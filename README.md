@@ -6,8 +6,9 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 # Installation 
 - $ git clone https://github.com/i2r-simmc/i2r-simmc-2020.git && cd i2r-simmc-2020
 - Place SIMMC data files under data/simmc_fasion,furniture folders
-  - $ git clone https://github.com/facebookresearch/simmc.git
-  - $ cp -R simmc/data .
+	- $ git lfs install
+	- $ git clone https://github.com/facebookresearch/simmc.git
+	- $ cp -R simmc/data .
 - $ mkdir model && mkdir model/fashion && mkdir model/furniture
 - $ mkdir output && mkdir output/fashion && mkdir output/furniture
 - The output JSON files are stored under output/fasion,furniture folders
@@ -25,7 +26,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 - $ bash preprocess.sh
 
 # Data pre-processing (retrieval model)
-- Edit src/preprocess_retrieval.sh ($DOMAIN=`fashion` or `furniture`)
+- Edit src/preprocess_retrieval.sh (TESTSET=`devtest` or `test-std`)
 - $ bash src/preprocess_retrieval.sh 
 
 # Training (joint learning model)

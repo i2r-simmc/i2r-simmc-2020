@@ -4,9 +4,9 @@ TESTSET="devtest"
 #TESTSET="test-std"
 
 # Fashion
-python3 parse.py --mode train --domain fashion
-python3 parse.py --mode dev --domain fashion
-python3 parse.py --mode ${TESTSET} --domain fashion
+python3 src/retrieval/parse.py --mode train --domain fashion
+python3 src/retrieval/parse.py --mode dev --domain fashion
+python3 src/retrieval/parse.py --mode ${TESTSET} --domain fashion
 
 if [ TESTSET == "devtest" ]
 then
@@ -20,9 +20,9 @@ fi
 
 
 #Furniture
-python3 parse.py --mode train --domain furniture
-python3 parse.py --mode dev --domain furniture
-python3 parse.py --mode ${TESTSET} --domain furniture
+python3 src/retrieval/parse.py --mode train --domain furniture
+python3 src/retrieval/parse.py --mode dev --domain furniture
+python3 src/retrieval/parse.py --mode ${TESTSET} --domain furniture
 
 if [ TESTSET == "devtest" ]
 then
