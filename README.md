@@ -50,12 +50,15 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 	- $ bash generate.sh \<domain\> <gpu_id> <learning_rate> <testing_split_name>
 	- e.g. $ bash generate.sh fashion 0 20 devtest
 	- The default testing batch size is 20, if you encounter CUDA memory issue, please reduce testing batch size.
-	- After the generation, the generated files for subtask #1,#2,#3 can be found in output/\<domain\>/output_subtask_1.json,output/\<domain\>/output_subtask_2.json,output/\<domain\>/output_subtask_3.json respectively.
 
 # Evaluation (retrieval model)
 - Edit src/retrieval/evaluate_all_models.sh ($DOMAIN=`fashion` or `furniture`, $TESTSET=`devtest` or `test-std`)
 - $ cd src/retrieval
 - $ bash evaluate_all_models.sh
+
+# Evaluation outputs
+- The output JSON files can be found at output/\<domain\>/outputs.json
+- `devtest`: The performance results can be found at output/\<domain\>/reports.csv
 
 # References
 - Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A., Levy, O., … Zettlemoyer, L. (2020). BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension. In ACL. Retrieved from http://arxiv.org/abs/1910.13461
