@@ -10,7 +10,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
   - $ cp -R simmc/data .
 - $ mkdir model && mkdir model/fashion && mkdir model/furniture
 - $ mkdir output && mkdir output/fashion && mkdir output/furniture
-- The output JSON files are stored under src/output/fasion,furniture folders
+- The output JSON files are stored under output/fasion,furniture folders
 
 # Installation (joint learning model)
 - $ cd src
