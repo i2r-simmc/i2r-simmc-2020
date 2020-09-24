@@ -30,6 +30,8 @@ def extract_actions(input_json_file):
     Args:
         input_json_file: JSON data file to extraction actions
     """
+    if not os.path.exists(input_json_file):
+        return
     print("Reading: {}".format(input_json_file))
     with open(input_json_file, "r") as file_id:
         raw_data = json.load(file_id)
