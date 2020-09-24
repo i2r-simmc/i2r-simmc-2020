@@ -404,7 +404,6 @@ def train(config):
 
 
 if __name__ == '__main__':
-    torch.multiprocessing.set_start_method('spawn')
     parser = argparse.ArgumentParser()
     parser.add_argument('--action', default=None, type=str, required=True,
                         help="Can be one of train, generate and evaluate.")
