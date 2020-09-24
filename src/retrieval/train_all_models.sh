@@ -3,8 +3,11 @@
 # Select domain as appropriate
 DOMAIN="fashion"
 #DOMAIN="furniture"
+# Directory where data is stored
 TRAIN_DIR="../../data/simmc_${DOMAIN}/"
+# Directory to output results
 OUTPUT_DIR="../../output/${DOMAIN}/"
+# Directory where model is stored
 MODEL_DIR="../../model/${DOMAIN}/best_model_fusion/"
 
 #ARCHITECTURE="bi"
