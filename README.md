@@ -9,6 +9,8 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 	- $ git lfs install
 	- $ git clone https://github.com/facebookresearch/simmc.git
 	- $ cp -R simmc/data .
+	- $ cp simmc/mm_action_prediction/models/fashion_model_metainfo.json data/simmc_fashion/
+	- $ cp simmc/mm_action_prediction/models/furniture_model_metainfo.json data/simmc_furniture/
 - $ mkdir model && mkdir model/fashion && mkdir model/furniture
 - $ mkdir output && mkdir output/fashion && mkdir output/furniture
 	- The output JSON files are stored under output/fasion,furniture folders
@@ -48,6 +50,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 ## Data pre-processing 
 - Edit src/preprocess_retrieval.sh (TESTSET=`devtest` or `test-std`)
 - $ bash src/preprocess_retrieval.sh 
+	- We assume that the files for the `test-std` set are named e.g. fashion_test-std_dials.json. If not, line 6 of preprocessing_retrieval.sh should be changed accordingly.
 
 ## Training 
 - Edit src/retrieval/train_all_models.sh ($DOMAIN=`fashion` or `furniture`)
@@ -60,8 +63,8 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 - $ bash evaluate_all_models.sh
 
 # Evaluation outputs
-- The output JSON files can be found at output/\<domain\>/outputs.json
-- `devtest`: The performance results can be found at output/\<domain\>/reports.csv
+- The output JSON files can be found at output/\<domain\>/outputs.<TESTSET>.json (TESTSET=`devtest` or `test-std`)
+- `devtest`: The performance results can be found at output/\<domain\>/reports.<TESTSET>.joint.csv,reports.<TESTSET>.retrieval.csv (TESTSET=`devtest` or `test-std`)
 
 # References
 - Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A., Levy, O., … Zettlemoyer, L. (2020). BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension. In ACL. Retrieved from http://arxiv.org/abs/1910.13461
