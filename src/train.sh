@@ -16,7 +16,7 @@ python main.py \
     --dev_data_tgt_subtask1="$ROOT"/simmc_${DOMAIN}_api_dev.json \
     --dev_data_tgt_subtask2="$ROOT"/${DOMAIN}_dev_dials_target.txt \
     --dev_data_tgt_subtask3="$ROOT"/simmc_${DOMAIN}_resp_dev.json \
-    --model_metainfo_path="$ROOT"/${DOMAIN}_model_metainfo.json \
+    --model_metainfo_path=${DOMAIN}_model_metainfo.json \
     --encoder_decoder_model_name_or_path=$MODEL \
     --learning_rate=$LEARNING_RATE \
     --local_rank=$LOCAL_RANK \

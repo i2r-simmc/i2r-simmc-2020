@@ -11,7 +11,7 @@ python main.py \
     --config_file=../config/simmc_transformers_fusion_${DOMAIN}.yml \
     --test_data_src="$ROOT"/${DOMAIN}_${TEST_SPLIT}_dials_predict.txt \
     --encoder_decoder_model_name_or_path=$MODEL \
-    --model_metainfo_path="$ROOT"/${DOMAIN}_model_metainfo.json \
+    --model_metainfo_path=${DOMAIN}_model_metainfo.json \
     --test_output_pred="$OUTPUT_ROOT"/output.json \
     --domain=$DOMAIN \
     --local_rank=$LOCAL_RANK \
