@@ -12,6 +12,7 @@ python3 ./retrieval/parse.py --mode ${TESTSET} --domain fashion --train_dir ${TR
 
 if [ TESTSET == "devtest" ]
 then
+    echo "devtest"
     mv ${TRAIN_DIR}simmc_fashion/devtest.txt ../data/simmc_fashion/test.txt
     cp ../data/simmc_fashion/fashion_devtest_dials_retrieval_candidates.json data/simmc_fashion/candidates.json
 elif [ TESTSET == "test-std" ]
