@@ -13,7 +13,7 @@ do
   FASHION_METADATA_FILE="${ROOT}fashion_metadata.json"
 
   # Step 1: Extract assistant API.
-  INPUT_FILES="${TRAIN_JSON_FILE} ${DEV_JSON_FILE} ${DEVTEST_JSON_FILE}" ${TEST_JSON_FILE}
+  INPUT_FILES="${TRAIN_JSON_FILE} ${DEV_JSON_FILE} ${DEVTEST_JSON_FILE} ${TEST_JSON_FILE}"
   if [ $DOMAIN == "furniture" ]
   then
     python tools/extract_actions.py \
