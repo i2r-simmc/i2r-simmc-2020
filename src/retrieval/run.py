@@ -54,7 +54,7 @@ def export_scores_json(results_out):
     with open(output_path, 'w') as outfile:
         json.dump(output, outfile)    
 
-def export_results(results)
+def export_results(results):
     results_path = os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m)
     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)                           
     if not os.path.isfile(results_path):
