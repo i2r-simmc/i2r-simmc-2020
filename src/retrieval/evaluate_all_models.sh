@@ -15,5 +15,5 @@ POLY_M=16
 echo "Performing evaluation for ${DOMAIN} dataset"
 
 python3 run.py --bart_model ${MODEL_DIR}/bart-base/ --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --use_pretrain --architecture bi --eval 
-python3 run.py --bart_model ${MODEL_DIR}/bart-base/ --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --use_pretrain --architecture poly --poly_m ${POLY_M} --eval
+#python3 run.py --bart_model ${MODEL_DIR}/bart-base/ --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --use_pretrain --architecture poly --poly_m ${POLY_M} --eval
 
