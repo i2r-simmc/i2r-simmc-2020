@@ -1,0 +1,7 @@
+logs/
+output/
+model/
+\.idea/**
+\.ipynb_checkpoints/**
+*.pyc
+.vscode
