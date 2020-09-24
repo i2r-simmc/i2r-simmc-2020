@@ -50,7 +50,10 @@ def export_scores_json(results_out):
             output_dict["candidate_scores"].append(output_turn_dict)
             idx+=1
         output.append(output_dict)
-    output_path = os.path.join(args.output_dir, 'subtask2_retrieval_{}_{}_output.json'.format(args.architecture, args.poly_m))
+    if (args.testset=='test-std'):
+        output_path = os.path.join(args.output_dir, 'dstc9-simmc-teststd-{}-subtask-2-retrieval.json'.format(args.domain))
+    else:
+        output_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain, args.architecture, args.poly_m))
     with open(output_path, 'w') as outfile:
         json.dump(output, outfile)    
 
@@ -144,6 +147,7 @@ if __name__ == '__main__':
     parser.add_argument("--output_dir", required=True, type=str)
     parser.add_argument("--model_out", default = '../../model/fashion', type = str)
     parser.add_argument("--train_dir", default='../data/simmc_fashion', type=str)
+    parser.add_arguement("--testset", default='devtest', type=str)
     parser.add_argument("--domain", default = 'fashion', type=str)
     parser.add_argument("--use_pretrain", action="store_true")
     parser.add_argument("--architecture", required=True, type=str, help='[poly, bi]')
