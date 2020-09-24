@@ -2,8 +2,8 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-#DOMAIN="fashion"
-DOMAIN="furniture"
+DOMAIN="fashion"
+#DOMAIN="furniture"
 # Directory where data is stored
 TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 # Directory to output results
