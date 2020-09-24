@@ -11,7 +11,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 	- $ cp -R simmc/data .
 - $ mkdir model && mkdir model/fashion && mkdir model/furniture
 - $ mkdir output && mkdir output/fashion && mkdir output/furniture
-- The output JSON files are stored under output/fasion,furniture folders
+	- The output JSON files are stored under output/fasion,furniture folders
 
 # Installation (joint learning model)
 - $ cd src
@@ -21,15 +21,12 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 - $ cd src/retrieval
 - $ pip install -r requirements.txt
 
-# Data pre-processing (joint learning model)
+# Joint learning
+## Data pre-processing 
 - $ cd src
 - $ bash preprocess.sh
 
-# Data pre-processing (retrieval model)
-- Edit src/preprocess_retrieval.sh (TESTSET=`devtest` or `test-std`)
-- $ bash src/preprocess_retrieval.sh 
-
-# Training (joint learning model)
+## Training 
 - $ cd src
 - $ bash train.sh \<domain\>
 	- \<domain\> is either `fashion` or `furniture`
@@ -38,12 +35,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 		- e.g. $ bash train.sh fashion 0 1e-5 3
 		- The default learning_rate is 1e-5, default batch size is 3, if you encounter CUDA memory issue, please reduce batch size to 2 or 1.
 
-# Training (retrieval model)
-- Edit src/retrieval/train_all_models.sh ($DOMAIN=`fashion` or `furniture`)
-- $ cd src/retrieval
-- $ bash train_all_models.sh
-
-# Evaluation (joint learning model)
+## Evaluation 
 - $ cd src/
 - $ bash generate.sh \<domain\>
 	- Optionally, you can generate with specified setting including gpu_id, testing batch size and testing split name
@@ -52,7 +44,17 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 	- e.g. $ bash generate.sh fashion 0 20 devtest
 	- The default testing batch size is 20, if you encounter CUDA memory issue, please reduce testing batch size.
 
-# Evaluation (retrieval model)
+# Retrieval
+## Data pre-processing 
+- Edit src/preprocess_retrieval.sh (TESTSET=`devtest` or `test-std`)
+- $ bash src/preprocess_retrieval.sh 
+
+## Training 
+- Edit src/retrieval/train_all_models.sh ($DOMAIN=`fashion` or `furniture`)
+- $ cd src/retrieval
+- $ bash train_all_models.sh
+
+## Evaluation 
 - Edit src/retrieval/evaluate_all_models.sh ($DOMAIN=`fashion` or `furniture`, $TESTSET=`devtest` or `test-std`)
 - $ cd src/retrieval
 - $ bash evaluate_all_models.sh
