@@ -469,6 +469,7 @@ if __name__ == '__main__':
     cfg['device'] = device
     cfg['domain'] = args.domain
     cfg['test_data_original_file'] = args.test_data_original_file
+    cfg['test_output_pred'] = args.test_output_pred
     cfg['model_metainfo_path'] = args.model_metainfo_path
     cfg['encoder_decoder_model_name_or_path'] = args.encoder_decoder_model_name_or_path
     if 'train' == args.action:
