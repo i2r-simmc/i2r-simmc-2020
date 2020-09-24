@@ -5,7 +5,7 @@ DOMAIN="fashion"
 #DOMAIN="furniture"
 TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 OUTPUT_DIR="../../output/${DOMAIN}/"
-MODEL_DIR="../../model/${DOMAIN}"
+MODEL_DIR="../../model/${DOMAIN}/best_model_fusion"
 
 #ARCHITECTURE="bi"
 #ARCHITECTURE="poly"
