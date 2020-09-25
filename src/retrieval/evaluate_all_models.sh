@@ -2,18 +2,24 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-DOMAIN="fashion"
-#DOMAIN="furniture"
+#DOMAIN="fashion"
+DOMAIN="furniture"
 TESTSET="devtest"
 #TESTSET="test-std"
 
 BART_MODEL="bart-base"
 #BART_MODEL="bart-large"
 
-ARCHITECTURE="bi"
-#ARCHITECTURE="poly"
+#ARCHITECTURE="bi"
+ARCHITECTURE="poly"
 #ARCHITECTURE="both"
-POLY_M=16
+if [ ${ARCHITECTURE} == "bi" ]
+then
+    POLY_M=0
+elif [ ${ARCHITECTURE} == "poly" ]
+then
+    POLY_M=16
+if
 
 if [ ${ARCHITECTURE} == "bi" ]
 then
@@ -41,6 +47,6 @@ fi
 echo "Performing evaluation for ${DOMAIN} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
 python3 run.py --bart_model ${BART_MODEL} --model_in ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
- --testset ${TESTSET} --use_pretrain --architecture ${ARCHITECTURE} --eval 
+ --testset ${TESTSET} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M} --eval 
 
 #python3 run.py --domain ${DOMAIN} --bart_model ${MODEL_DIR} --model_out ${MODEL_DIR} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --testset ${TESTSET} --use_pretrain --architecture poly --poly_m ${POLY_M} --eval
