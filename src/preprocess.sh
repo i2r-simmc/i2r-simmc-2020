@@ -8,7 +8,6 @@ do
   TRAIN_JSON_FILE="${ROOT}${DOMAIN}_train_dials.json"
   DEV_JSON_FILE="${ROOT}${DOMAIN}_dev_dials.json"
   DEVTEST_JSON_FILE="${ROOT}${DOMAIN}_devtest_dials.json"
-  TEST_JSON_FILE="${ROOT}${DOMAIN}_test_dials.json"
   FURNITURE_METADATA_FILE="${ROOT}furniture_metadata.csv"
   FASHION_METADATA_FILE="${ROOT}fashion_metadata.json"
 
@@ -33,18 +32,21 @@ done
 python preprocess.py \
     --data_path=../data \
     --use_multimodal_contexts \
-    --use_action_prediction
+    --use_action_prediction \
+    --test_split_name="test-std"
 
 ## Preprocess for subtask#2 (fashion and furniture, multi-modal)
 python preprocess.py \
     --data_path=../data \
-    --use_multimodal_contexts
+    --use_multimodal_contexts \
+    --test_split_name="test-std"
 
 ## Preprocess for subtask#3 (fashion and furniture, multi-modal)
 python preprocess.py \
     --data_path=../data \
     --use_multimodal_contexts \
-    --generate_belief_state
+    --generate_belief_state \
+    --test_split_name="test-std"
 
 # Step 3 flatten subtask #3 and flatten input
 # Fashion

@@ -41,13 +41,13 @@ IGNORE_ATTRIBUTES = [
 
 
 def convert(data_path, generate_belief_state=False, use_multimodal_contexts=False,
-            use_action_prediction=False):
+            use_action_prediction=False, test_split_name='test-std'):
     """
         Input: JSON representation of the dialogs
         Output: line-by-line stringified representation of each turn
     """
     for category in ['fashion', 'furniture']:
-        for split in ['train', 'dev', 'devtest', 'test-std']:
+        for split in ['train', 'dev', 'devtest', test_split_name]:
             # Load the dialogue data
             filepath = os.path.join(data_path, 'simmc_%s' % category,
                                                '%s_%s_dials.json' % (category, split))
@@ -56,7 +56,7 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
             with open(filepath, 'r') as f_in:
                 data = json.load(f_in)
 
-            if category == 'furniture' and split != 'test-std':
+            if category == 'furniture' and split != test_split_name:
                 if not os.path.exists(os.path.join(data_path, 'simmc_%s' % category, 'furniture_%s_dials_api_calls.json' % split)):
                     continue
                 with open(os.path.join(data_path, 'simmc_%s' % category, 'furniture_%s_dials_api_calls.json' % split), 'r') as f_in:
@@ -70,7 +70,7 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
             converted_data = []
             oov = set()
             for idx_diag, each_dialogue in enumerate(data):
-                if category == 'furniture' and split != 'test-std':
+                if category == 'furniture' and split != test_split_name:
                     api_d = api_call_data[idx_diag]
                 dialogue_dict = {'dialog': []}
                 if category == 'furniture':
@@ -95,7 +95,7 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
                             dialogue_dict['dialog'].append({
                                 'question': conversation['transcript'],
                             })
-                    elif use_action_prediction and split != 'test-std':
+                    elif use_action_prediction and split != test_split_name:
                         if category == 'fashion':
                             action = convert_action(conversation, mm_state)
                             if action['action_supervision'] and action['action_supervision']['attributes']:
@@ -128,7 +128,7 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
                         else:
                             visual_object_context = None
                         
-                        if split != 'test-std':
+                        if split != test_split_name:
                             dialogue_dict['dialog'].append({
                                 'answer': conversation['system_transcript'],
                                 'question': conversation['transcript'],
@@ -165,7 +165,7 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
                         else:
                             visual_object_context = None
 
-                        if split != 'test-std':
+                        if split != test_split_name:
                             dialogue_dict['dialog'].append({
                                 'answer': conversation['system_transcript'],
                                 'question': conversation['transcript'],
@@ -211,6 +211,8 @@ def main():
     parser.add_argument('--use_action_prediction',
                         action='store_true',
                         help='determine whether to use action prediction')
+    parser.add_argument('--test_split_name', type=str, default='test-std',
+                        help='name of test split')
 
     args = parser.parse_args()
     data_path = args.data_path
@@ -221,7 +223,8 @@ def main():
     # Convert the data into MTN friendly format
     convert(data_path, generate_belief_state=generate_belief_state,
             use_multimodal_contexts=use_multimodal_contexts,
-            use_action_prediction=use_action_prediction)
+            use_action_prediction=use_action_prediction, 
+            test_split_name=args.test_split_name)
 
 
 if __name__ == '__main__':
