@@ -211,6 +211,8 @@ if __name__ == '__main__':
 
     print('=' * 80)
     print('Train dir:', args.train_dir)
+    print('Pretrained model dir:', args.bart_model)
+    print('Trained model dir:', args.model_out)
     print('Output dir:', args.output_dir)
     print('=' * 80)
 
