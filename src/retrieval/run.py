@@ -207,7 +207,7 @@ if __name__ == '__main__':
     ConfigClass, TokenizerClass, BertModelClass = MODEL_CLASSES[args.model_type]
 
     ## init dataset and bart model
-    tokenizer = AutoTokenizer.from_pretrained("facebook/bart-base", do_lower_case=True, clean_text=False)
+    tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large", do_lower_case=True, clean_text=False)
     context_transform = SelectionJoinTransform(tokenizer=tokenizer, max_len=args.max_contexts_length)
     response_transform = SelectionSequentialTransform(tokenizer=tokenizer, max_len=args.max_response_length)
 
