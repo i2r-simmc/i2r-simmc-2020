@@ -4,22 +4,43 @@
 
 DOMAIN="fashion"
 #DOMAIN="furniture"
+TESTSET="devtest"
+#TESTSET="test-std"
+
+BART_MODEL="bart-base"
+#BART_MODEL="bart-large"
+
+ARCHITECTURE="bi"
+#ARCHITECTURE="poly"
+#ARCHITECTURE="both"
+POLY_M=16
+
+if [ ${ARCHITECTURE} == "bi" ]
+then
+    MODEL_LABEL="bi-encoder"
+elif [ ${ARCHITECTURE} == "poly" ]
+then 
+    MODEL_LABEL="poly-encoder"
+fi
+
 # Directory where data is stored
 TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 # Directory to output results
-OUTPUT_DIR="../../output/${DOMAIN}/"
+OUTPUT_DIR="../../output/${DOMAIN}/${BART_MODEL}_${MODEL_LABEL}/${TESTSET}/"
+# Directory where pretrained model is stored
+MODEL_DIR="../../model/${DOMAIN}/${BART_MODEL}/best_model/"
+# Directory to store trained model
+if [ ${ARCHITECTURE} == "bi" ]
+then
+    MODEL_OUT="../../model/${DOMAIN}/bi-encoder/best_model/"
+elif [ ${ARCHITECTURE} == "poly" ]
+then 
+    MODEL_OUT="../../model/${DOMAIN}/poly-encoder/best_model/"
+fi
 
-TESTSET="devtest"
-#TESTSET='test-std'
+echo "Performing evaluation for ${DOMAIN} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
-# Directory where model is stored
-MODEL_DIR="../../model/${DOMAIN}/best_model_fusion/"
+python3 run.py --bart_model ${MODEL_DIR} --model_out ${MODEL_DIR} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
+ --testset ${TESTSET} --use_pretrain --architecture ${ARCHITECTURE} --eval 
 
-#ARCHITECTURE="bi"
-#ARCHITECTURE="poly"
-POLY_M=16
-
-echo "Performing evaluation for ${DOMAIN} dataset"
-
-python3 run.py --domain ${DOMAIN} --bart_model ${MODEL_DIR} --model_out ${MODEL_DIR} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --testset ${TESTSET} --use_pretrain --architecture bi --eval 
-python3 run.py --domain ${DOMAIN} --bart_model ${MODEL_DIR} --model_out ${MODEL_DIR} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --testset ${TESTSET} --use_pretrain --architecture poly --poly_m ${POLY_M} --eval
+#python3 run.py --domain ${DOMAIN} --bart_model ${MODEL_DIR} --model_out ${MODEL_DIR} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --testset ${TESTSET} --use_pretrain --architecture poly --poly_m ${POLY_M} --eval
