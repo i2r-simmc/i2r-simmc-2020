@@ -41,21 +41,22 @@ IGNORE_ATTRIBUTES = [
 
 
 def convert(data_path, generate_belief_state=False, use_multimodal_contexts=False,
-            use_action_prediction=False, test_split_name='test-std'):
+            use_action_prediction=False):
     """
         Input: JSON representation of the dialogs
         Output: line-by-line stringified representation of each turn
     """
     for category in ['fashion', 'furniture']:
-        for split in ['train', 'dev', 'devtest', test_split_name]:
+        for split in ['train', 'dev', 'devtest', 'test-std']:
             # Load the dialogue data
-            if not os.path.exists(os.path.join(data_path, 'simmc_%s' % category,
-                                               '%s_%s_dials.json' % (category, split))):
+            filepath = os.path.join(data_path, 'simmc_%s' % category,
+                                               '%s_%s_dials.json' % (category, split))
+            if not os.path.exists(filepath):
                 continue
-            with open(os.path.join(data_path, 'simmc_%s' % category, '%s_%s_dials.json' %
-                                                                     (category, split)), 'r') as f_in:
+            with open(filepath, 'r') as f_in:
                 data = json.load(f_in)
-            if category == 'furniture':
+
+            if category == 'furniture' and split != 'test-std':
                 if not os.path.exists(os.path.join(data_path, 'simmc_%s' % category, 'furniture_%s_dials_api_calls.json' % split)):
                     continue
                 with open(os.path.join(data_path, 'simmc_%s' % category, 'furniture_%s_dials_api_calls.json' % split), 'r') as f_in:
@@ -69,7 +70,7 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
             converted_data = []
             oov = set()
             for idx_diag, each_dialogue in enumerate(data):
-                if category == 'furniture':
+                if category == 'furniture' and split != 'test-std':
                     api_d = api_call_data[idx_diag]
                 dialogue_dict = {'dialog': []}
                 if category == 'furniture':
@@ -85,11 +86,16 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
 
                 for idx_c, conversation in enumerate(each_dialogue['dialogue']):
                     if not generate_belief_state and not use_action_prediction:
-                        dialogue_dict['dialog'].append({
-                            'answer': conversation['system_transcript'],
-                            'question': conversation['transcript'],
-                        })
-                    elif use_action_prediction:
+                        if 'system_transcript' in conversation:
+                            dialogue_dict['dialog'].append({
+                                'answer': conversation['system_transcript'],
+                                'question': conversation['transcript'],
+                            })
+                        else:
+                            dialogue_dict['dialog'].append({
+                                'question': conversation['transcript'],
+                            })
+                    elif use_action_prediction and split != 'test-std':
                         if category == 'fashion':
                             action = convert_action(conversation, mm_state)
                             if action['action_supervision'] and action['action_supervision']['attributes']:
@@ -115,34 +121,43 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
                                 args_str = ' [ %s ]' % args_str
                             oov.add(action_str)
                             action_str += args_str
+
                         if use_multimodal_contexts:
                             visual_objects = conversation[FIELDNAME_VISUAL_OBJECTS]
                             visual_object_context = represent_visual_objects(visual_objects)
                         else:
                             visual_object_context = None
-                        dialogue_dict['dialog'].append({
-                            'answer': conversation['system_transcript'],
-                            'question': conversation['transcript'],
-                            'visual_objects': visual_object_context,
-                            'target': action_str,
-                        })
+                        
+                        if split != 'test-std':
+                            dialogue_dict['dialog'].append({
+                                'answer': conversation['system_transcript'],
+                                'question': conversation['transcript'],
+                                'visual_objects': visual_object_context,
+                                'target': action_str,
+                            })
+                        else:
+                            dialogue_dict['dialog'].append({
+                                'question': conversation['transcript'],
+                                'visual_objects': visual_object_context
+                            })
                     else:
-                        belief_state = []
-                        user_belief = conversation[FIELDNAME_BELIEF_STATE]
-                        for bs_per_frame in user_belief:
-                            str_belief_state_per_frame = "{act} [ {slot_values} ]".format(
-                                act=bs_per_frame['act'].strip(),
-                                slot_values=', '.join(
-                                    [f'{kv[0].strip()} = {kv[1].strip()}'
-                                     for kv in bs_per_frame['slots']])
-                            )
-                            belief_state.append(str_belief_state_per_frame)
+                        if FIELDNAME_BELIEF_STATE in conversation:
+                            belief_state = []
+                            user_belief = conversation[FIELDNAME_BELIEF_STATE]
+                            for bs_per_frame in user_belief:
+                                str_belief_state_per_frame = "{act} [ {slot_values} ]".format(
+                                    act=bs_per_frame['act'].strip(),
+                                    slot_values=', '.join(
+                                        [f'{kv[0].strip()} = {kv[1].strip()}'
+                                         for kv in bs_per_frame['slots']])
+                                )
+                                belief_state.append(str_belief_state_per_frame)
 
-                            oov.update(re.split(r'[:.]', bs_per_frame['act']))
-                            for kv in bs_per_frame['slots']:
-                                slot_name = kv[0]
-                                oov.add(slot_name)
-                        str_belief_state = ' '.join(belief_state)
+                                oov.update(re.split(r'[:.]', bs_per_frame['act']))
+                                for kv in bs_per_frame['slots']:
+                                    slot_name = kv[0]
+                                    oov.add(slot_name)
+                            str_belief_state = ' '.join(belief_state)
 
                         if use_multimodal_contexts:
                             visual_objects = conversation[FIELDNAME_VISUAL_OBJECTS]
@@ -150,12 +165,19 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
                         else:
                             visual_object_context = None
 
-                        dialogue_dict['dialog'].append({
-                            'answer': conversation['system_transcript'],
-                            'question': conversation['transcript'],
-                            'visual_objects': visual_object_context,
-                            'target': str_belief_state,
-                        })
+                        if split != 'test-std':
+                            dialogue_dict['dialog'].append({
+                                'answer': conversation['system_transcript'],
+                                'question': conversation['transcript'],
+                                'visual_objects': visual_object_context,
+                                'target': str_belief_state,
+                            })
+                        else:
+                            dialogue_dict['dialog'].append({
+                                'question': conversation['transcript'],
+                                'visual_objects': visual_object_context
+                            })
+
                 converted_data.append(dialogue_dict)
 
             converted_data = {
@@ -189,15 +211,9 @@ def main():
     parser.add_argument('--use_action_prediction',
                         action='store_true',
                         help='determine whether to use action prediction')
-    parser.add_argument('--test_split_name',
-                        help='split name of the testing data',
-                        required=False,
-                        default='test-std',
-                        type=str)
 
     args = parser.parse_args()
     data_path = args.data_path
-    test_split_name = args.test_split_name
     generate_belief_state = bool(args.generate_belief_state)
     use_multimodal_contexts = bool(args.use_multimodal_contexts)
     use_action_prediction = bool(args.use_action_prediction)
@@ -205,8 +221,7 @@ def main():
     # Convert the data into MTN friendly format
     convert(data_path, generate_belief_state=generate_belief_state,
             use_multimodal_contexts=use_multimodal_contexts,
-            use_action_prediction=use_action_prediction,
-            test_split_name=test_split_name)
+            use_action_prediction=use_action_prediction)
 
 
 if __name__ == '__main__':

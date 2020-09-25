@@ -33,7 +33,8 @@ def convert_json_to_flattened(
         output_path_predict,
         output_path_target,
         len_context=2,
-        use_multimodal_contexts=True):
+        use_multimodal_contexts=True,
+        test_data=False):
     """
         Input: JSON representation of the dialogs
         Output: line-by-line stringified representation of each turn
@@ -53,15 +54,18 @@ def convert_json_to_flattened(
 
         for turn in dialog[FIELDNAME_DIALOG]:
             user_uttr = turn[FIELDNAME_USER_UTTR].replace('\n', ' ').strip()
-            user_belief = turn[FIELDNAME_BELIEF_STATE]
-            asst_uttr = turn[FIELDNAME_ASST_UTTR].replace('\n', ' ').strip()
+            if FIELDNAME_BELIEF_STATE in turn:
+                user_belief = turn[FIELDNAME_BELIEF_STATE]
+            if FIELDNAME_ASST_UTTR in turn:
+                asst_uttr = turn[FIELDNAME_ASST_UTTR].replace('\n', ' ').strip()
 
             # Format main input context
             context = ''
             if prev_asst_uttr:
                 context += f'System : {prev_asst_uttr} '
             context += f'User : {user_uttr}'
-            prev_asst_uttr = asst_uttr
+            if FIELDNAME_ASST_UTTR in turn:
+                prev_asst_uttr = asst_uttr
 
             # Add multimodal contexts
             if use_multimodal_contexts:
@@ -73,17 +77,18 @@ def convert_json_to_flattened(
             context = ' '.join(lst_context[-len_context:])
 
             # Format belief state
-            belief_state = []
-            for bs_per_frame in user_belief:
-                str_belief_state_per_frame = "{act} [ {slot_values} ]".format(
-                    act=bs_per_frame['act'].strip(),
-                    slot_values=', '.join(
-                        [f'{kv[0].strip()} = {kv[1].strip()}'
-                            for kv in bs_per_frame['slots']])
-                )
-                belief_state.append(str_belief_state_per_frame)
+            if FIELDNAME_BELIEF_STATE in turn:
+                belief_state = []
+                for bs_per_frame in user_belief:
+                    str_belief_state_per_frame = "{act} [ {slot_values} ]".format(
+                        act=bs_per_frame['act'].strip(),
+                        slot_values=', '.join(
+                            [f'{kv[0].strip()} = {kv[1].strip()}'
+                                for kv in bs_per_frame['slots']])
+                    )
+                    belief_state.append(str_belief_state_per_frame)
 
-            str_belief_state = ' '.join(belief_state)
+                str_belief_state = ' '.join(belief_state)
 
             # Format the main input
             predict = TEMPLATE_PREDICT.format(
@@ -92,16 +97,13 @@ def convert_json_to_flattened(
             )
             predicts.append(predict)
 
-            # Format the main output
-            target = '%s %s %s' % (START_BELIEF_STATE, str_belief_state, END_OF_BELIEF)
-            targets.append(target)
+            if FIELDNAME_BELIEF_STATE in turn:
+                # Format the main output
+                target = '%s %s %s' % (START_BELIEF_STATE, str_belief_state, END_OF_BELIEF)
+                targets.append(target)
 
     # Create a directory if it does not exist
     directory = os.path.dirname(output_path_predict)
-    if not os.path.exists(directory):
-        os.makedirs(directory, exist_ok=True)
-
-    directory = os.path.dirname(output_path_target)
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
 
@@ -110,9 +112,14 @@ def convert_json_to_flattened(
         X = '\n'.join(predicts)
         f_predict.write(X)
 
-    with open(output_path_target, 'w') as f_target:
-        Y = '\n'.join(targets)
-        f_target.write(Y)
+    if len(targets) > 0:
+        directory = os.path.dirname(output_path_target)
+        if not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+        
+        with open(output_path_target, 'w') as f_target:
+            Y = '\n'.join(targets)
+            f_target.write(Y)
 
 
 def represent_visual_objects(visual_objects):

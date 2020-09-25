@@ -24,6 +24,9 @@ if __name__ == '__main__':
     parser.add_argument('--use_multimodal_contexts',
                         help='determine whether to use the multimodal contexts each turn',
                         type=int, default=1)
+    parser.add_argument('--test_data',
+                        action='store_true',
+                        help='used for test data (no labels)')
 
     args = parser.parse_args()
     input_path_json = args.input_path_json
@@ -38,4 +41,5 @@ if __name__ == '__main__':
         output_path_predict,
         output_path_target,
         len_context=len_context,
-        use_multimodal_contexts=use_multimodal_contexts)
+        use_multimodal_contexts=use_multimodal_contexts,
+        test_data=args.test_data)
