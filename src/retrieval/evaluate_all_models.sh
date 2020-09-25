@@ -4,8 +4,8 @@
 
 DOMAIN="fashion"
 #DOMAIN="furniture"
-TESTSET="devtest"
-#TESTSET="test-std"
+#TESTSET="devtest"
+TESTSET="test-std"
 
 BART_MODEL="bart-base"
 #BART_MODEL="bart-large"
