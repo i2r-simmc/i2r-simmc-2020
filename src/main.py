@@ -188,7 +188,7 @@ def post_process(config):
             if is_fashion:
                 attributes = list(filter(lambda x: x, map(str.strip, attributes.split(' '))))
                 predictions.append({
-                    'turn_idx': turn['turn_idx'],
+                    'turn_id': turn['turn_idx'],
                     'action': action,
                     'action_log_prob': action_log_probs[count],
                     'attributes': {
@@ -209,7 +209,7 @@ def post_process(config):
                         else:
                             attribute_dict[kv_pair_split[0].strip()] = kv_pair_split[1].strip()
                 predictions.append({
-                    'turn_idx': turn['turn_idx'],
+                    'turn_id': turn['turn_idx'],
                     'action': action,
                     'action_log_prob': action_log_probs[count],
                     'attributes': attribute_dict
@@ -245,6 +245,7 @@ def post_process(config):
         for turn in d['dialogue']:
             response = subtask2[count].strip()
             predictions.append({
+                'turn_id': turn['turn_idx'],
                 'response': response
             })
             count += 1
