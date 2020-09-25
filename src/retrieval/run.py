@@ -35,6 +35,12 @@ def set_seed(args):
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
 
+def check_dir_exist():
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
+    if not os.path.exists(args.model_out):
+        os.makedirs(args.model_out)
+    
 def export_scores_json(results_out):
     
     with open(os.path.join(args.train_dir, 'candidates.json')) as f:
@@ -190,7 +196,9 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "%d" % args.gpu
     if args.set_seed:
         set_seed(args)
-
+    
+    check_dir_exist()
+    
     MODEL_CLASSES = {
         'bart': (BartConfig, BartTokenizer, BartModel)
     }
