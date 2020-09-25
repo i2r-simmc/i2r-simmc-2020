@@ -1,8 +1,8 @@
 # Train Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
 # Select domain as appropriate
-DOMAIN="fashion"
-#DOMAIN="furniture"
+#DOMAIN="fashion"
+DOMAIN="furniture"
 #TESTSET="devtest"
 TESTSET="test-std"
 
@@ -39,7 +39,7 @@ then
     MODEL_OUT="../../model/${DOMAIN}/poly-encoder/best_model/"
 fi
 
-GPU=0
+GPU=1
 
 echo "Performing training for ${DOMAIN} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
