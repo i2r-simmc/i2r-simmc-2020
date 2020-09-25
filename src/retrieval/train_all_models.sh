@@ -20,7 +20,7 @@ elif [ ${ARCHITECTURE} == "poly" ]
 then
     POLY_M=16
     MODEL_LABEL="poly-encoder"
-if
+fi
 
 # Directory where data is stored
 TRAIN_DIR="../../data/simmc_${DOMAIN}/"
