@@ -4,8 +4,8 @@
 
 DOMAIN="fashion"
 #DOMAIN="furniture"
-TESTSET="devtest"
-#TESTSET="test-std"
+#TESTSET="devtest"
+TESTSET="test-std"
 
 BART_MODEL="bart-base"
 #BART_MODEL="bart-large"
@@ -38,7 +38,7 @@ then
     MODEL_OUT="../../model/${DOMAIN}/poly-encoder/best_model/"
 fi
 
-GPU=1
+GPU=0
 
 echo "Performing evaluation for ${DOMAIN} ${TESTSET} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
