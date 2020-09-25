@@ -277,7 +277,7 @@ if __name__ == '__main__':
         if (args.testset == "devtest"):
             print (test_result)
         elif (args.testset == "test-std"):
-            print ('Output scores json file is saved at ', args.out_dir
+            print ('Output scores json file is saved at ', args.out_dir)
         exit()
         
     no_decay = ["bias", "LayerNorm.weight"]
