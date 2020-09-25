@@ -32,21 +32,18 @@ done
 python preprocess.py \
     --data_path=../data \
     --use_multimodal_contexts \
-    --use_action_prediction \
-    --test_split_name="test-std"
+    --use_action_prediction
 
 ## Preprocess for subtask#2 (fashion and furniture, multi-modal)
 python preprocess.py \
     --data_path=../data \
-    --use_multimodal_contexts \
-    --test_split_name="test-std"
+    --use_multimodal_contexts
 
 ## Preprocess for subtask#3 (fashion and furniture, multi-modal)
 python preprocess.py \
     --data_path=../data \
     --use_multimodal_contexts \
-    --generate_belief_state \
-    --test_split_name="test-std"
+    --generate_belief_state
 
 # Step 3 flatten subtask #3 and flatten input
 # Fashion
