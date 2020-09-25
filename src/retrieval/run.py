@@ -43,7 +43,7 @@ def check_dir_exist():
     
 def export_scores_json(results_out):
     
-    with open(os.path.join(args.train_dir,'{}_candidates.json'.format(args.testset)) as f:
+    with open(os.path.join(args.train_dir,'{}_candidates.json'.format(args.testset))) as f:
         candidates = json.load(f)
     output = []
     idx = 0
