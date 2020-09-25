@@ -334,7 +334,9 @@ def generation(config):
                 flag = 0
                 for j in range(len(generated[i])):
                     if generated[i][j].item() not in [tokenizer_enc.cls_token_id, tokenizer_enc.bos_token_id,
-                                                      tokenizer_enc.pad_token_id, tokenizer_enc.eos_token_id]:
+                                                      tokenizer_enc.pad_token_id, tokenizer_enc.eos_token_id,
+                                                      tokenizer_enc.cls_token_id, tokenizer_enc.sep_token_id,
+                                                      tokenizer_enc.mask_token_id, tokenizer_enc.unk_token_id]:
                         flag = 1
                         break
                 if flag:
