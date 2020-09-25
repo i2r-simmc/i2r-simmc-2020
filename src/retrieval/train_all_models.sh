@@ -40,7 +40,7 @@ fi
 echo "Performing training for ${DOMAIN} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
 # Run training for bi-encoder and poly-encoder
-python3 run.py --bart_model ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
+python3 run.py --bart_model ${BART_MODEL} --model_in ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
 --testset ${TESTSET} --use_pretrain --architecture ${ARCHITECTURE}
 
 #python3 run.py --bart_model ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} --use_pretrain --architecture poly --poly_m ${POLY_M}
