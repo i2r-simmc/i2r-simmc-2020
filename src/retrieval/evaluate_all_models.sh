@@ -16,16 +16,10 @@ ARCHITECTURE="poly"
 if [ ${ARCHITECTURE} == "bi" ]
 then
     POLY_M=0
+    MODEL_LABEL="bi-encoder"
 elif [ ${ARCHITECTURE} == "poly" ]
 then
     POLY_M=16
-if
-
-if [ ${ARCHITECTURE} == "bi" ]
-then
-    MODEL_LABEL="bi-encoder"
-elif [ ${ARCHITECTURE} == "poly" ]
-then 
     MODEL_LABEL="poly-encoder"
 fi
 
