@@ -54,18 +54,17 @@ def convert_json_to_flattened(
 
         for turn in dialog[FIELDNAME_DIALOG]:
             user_uttr = turn[FIELDNAME_USER_UTTR].replace('\n', ' ').strip()
-            if FIELDNAME_BELIEF_STATE in turn:
+            asst_uttr = turn[FIELDNAME_ASST_UTTR].replace('\n', ' ').strip()
+            if not test_data:
                 user_belief = turn[FIELDNAME_BELIEF_STATE]
-            if FIELDNAME_ASST_UTTR in turn:
-                asst_uttr = turn[FIELDNAME_ASST_UTTR].replace('\n', ' ').strip()
+                
 
             # Format main input context
             context = ''
             if prev_asst_uttr:
                 context += f'System : {prev_asst_uttr} '
             context += f'User : {user_uttr}'
-            if FIELDNAME_ASST_UTTR in turn:
-                prev_asst_uttr = asst_uttr
+            prev_asst_uttr = asst_uttr
 
             # Add multimodal contexts
             if use_multimodal_contexts:
@@ -77,7 +76,7 @@ def convert_json_to_flattened(
             context = ' '.join(lst_context[-len_context:])
 
             # Format belief state
-            if FIELDNAME_BELIEF_STATE in turn:
+            if not test_data:
                 belief_state = []
                 for bs_per_frame in user_belief:
                     str_belief_state_per_frame = "{act} [ {slot_values} ]".format(
@@ -97,7 +96,7 @@ def convert_json_to_flattened(
             )
             predicts.append(predict)
 
-            if FIELDNAME_BELIEF_STATE in turn:
+            if not test_data:
                 # Format the main output
                 target = '%s %s %s' % (START_BELIEF_STATE, str_belief_state, END_OF_BELIEF)
                 targets.append(target)

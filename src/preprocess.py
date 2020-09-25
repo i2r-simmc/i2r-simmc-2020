@@ -137,11 +137,12 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
                             })
                         else:
                             dialogue_dict['dialog'].append({
+                                'answer': conversation['system_transcript'],
                                 'question': conversation['transcript'],
                                 'visual_objects': visual_object_context
                             })
                     else:
-                        if FIELDNAME_BELIEF_STATE in conversation:
+                        if split != test_split_name:
                             belief_state = []
                             user_belief = conversation[FIELDNAME_BELIEF_STATE]
                             for bs_per_frame in user_belief:
@@ -174,6 +175,7 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
                             })
                         else:
                             dialogue_dict['dialog'].append({
+                                'answer': conversation['system_transcript'],
                                 'question': conversation['transcript'],
                                 'visual_objects': visual_object_context
                             })
