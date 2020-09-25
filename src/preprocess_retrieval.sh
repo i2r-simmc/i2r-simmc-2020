@@ -2,8 +2,8 @@
 
 TRAIN_DIR="../data/"
 
-TESTSET="devtest"
-#TESTSET="test-std"
+#TESTSET="devtest"
+TESTSET="test-std"
 
 # Fashion
 python3 ./retrieval/parse.py --mode train --domain fashion --train_dir ${TRAIN_DIR}
