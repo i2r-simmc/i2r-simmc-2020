@@ -12,7 +12,13 @@ BART_MODEL="bart-base"
 #ARCHITECTURE="bi"
 ARCHITECTURE="poly"
 #ARCHITECTURE="both"
-POLY_M=16
+if [ ${ARCHITECTURE} == "bi" ]
+then
+    POLY_M=0
+elif [ ${ARCHITECTURE} == "poly" ]
+then
+    POLY_M=16
+if
 
 if [ ${ARCHITECTURE} == "bi" ]
 then
@@ -41,6 +47,6 @@ echo "Performing training for ${DOMAIN} dataset with ${BART_MODEL} and ${MODEL_L
 
 # Run training for bi-encoder and poly-encoder
 python3 run.py --bart_model ${BART_MODEL} --model_in ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
---testset ${TESTSET} --use_pretrain --architecture ${ARCHITECTURE}
+--testset ${TESTSET} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M}
 
 #python3 run.py --bart_model ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} --use_pretrain --architecture poly --poly_m ${POLY_M}
