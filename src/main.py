@@ -273,12 +273,17 @@ def generation(config):
     def collate(examples):
         src_list = list(map(lambda x: x[0], examples))
         src_mask_list = list(map(lambda x: x[1], examples))
-        tgt_list = list(map(lambda x: x[2], examples))
+        
         if tokenizer_enc._pad_token is None:
             src_pad = pad_sequence(src_list, batch_first=True)
         else:
             src_pad = pad_sequence(src_list, batch_first=True, padding_value=tokenizer_enc.pad_token_id)
         src_mask_pad = pad_sequence(src_mask_list, batch_first=True, padding_value=0)
+
+        if len(examples[0]) == 2:        
+            return src_pad, src_mask_pad
+
+        tgt_list = list(map(lambda x: x[2], examples))
         if tokenizer_dec._pad_token is None:
             tgt_pad = pad_sequence(tgt_list, batch_first=True)
         else:
@@ -313,7 +318,7 @@ def generation(config):
             action_log_probs = []
             src = batch[0].to(config['device'])
             src_mask = batch[1].to(config['device'])
-            tgt = batch[2].to(config['device'])
+            
             generated, logits = model.generate(src,
                                        max_length=200 if config['name'] == 'simmc-fusion' else 60,
                                        decoder_start_token_id=tokenizer_dec.pad_token_id,
@@ -342,6 +347,10 @@ def generation(config):
                 'log_probs': action_log_probs[i]
             } for i in range(len(generated))]
             results += result_lines
+
+    output_dir = os.path.dirname(config['test_output_pred'])
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     save_json(results, config['test_output_pred'])
 
 

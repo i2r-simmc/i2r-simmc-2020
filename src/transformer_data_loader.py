@@ -77,6 +77,8 @@ class SimmcFusionDataset(Dataset):
         print('loading data from', data_file_src)
         with open(data_file_src) as f_src:
             lines_src = f_src.readlines()
+
+        lines_tgt = []
         if data_file_tgt1 is not None and data_file_tgt2 is not None and data_file_tgt3 is not None:
             lines_tgt1 = []
             tgt_dialogs = load_json(data_file_tgt1)
@@ -97,17 +99,23 @@ class SimmcFusionDataset(Dataset):
         else:
             lines_tgt = [
                 '<cls> <end>' for _ in range(len(lines_src))]
+
         for idx in range(len(lines_src)):
             src = tokenizer_enc(lines_src[idx], add_special_tokens=True)
             src_vec = src.input_ids
             src_mask = src.attention_mask
-            tgt_vec = tokenizer_dec.encode(lines_tgt[idx], add_special_tokens=True)
             self.src.append(src_vec)
             self.src_mask.append(src_mask)
-            self.tgt.append(tgt_vec)
+            
+            if len(lines_tgt) > 0:
+                tgt_vec = tokenizer_dec.encode(lines_tgt[idx], add_special_tokens=True)
+                self.tgt.append(tgt_vec)
 
     def __len__(self):
         return len(self.src)
 
     def __getitem__(self, item):
-        return torch.tensor(self.src[item]), torch.tensor(self.src_mask[item]), torch.tensor(self.tgt[item])
+        if len(self.tgt) > 0:
+            return torch.tensor(self.src[item]), torch.tensor(self.src_mask[item]), torch.tensor(self.tgt[item])
+        else:
+            return torch.tensor(self.src[item]), torch.tensor(self.src_mask[item])
