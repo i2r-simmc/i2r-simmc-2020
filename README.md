@@ -1,8 +1,9 @@
 Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), a track of DSTC 9 (https://dstc9.dstc.community/home)
 
 # Installation
-- $ git clone https://github.com/i2r-simmc/i2r-simmc-2020.git && cd i2r-simmc-2020
+- $ git clone https://github.com/i2r-simmc/i2r-simmc-2020.git
 - $ pip install -r requirements.txt
+- $ cd i2r-simmc-2020
 - $ mkdir model && mkdir model/fashion && mkdir model/furniture
 - $ mkdir output && mkdir output/fashion && mkdir output/furniture
 
