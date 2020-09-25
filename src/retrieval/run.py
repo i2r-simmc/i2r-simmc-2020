@@ -226,7 +226,7 @@ if __name__ == '__main__':
         train_dataloader = DataLoader(train_dataset, batch_size=args.train_batch_size, collate_fn=train_dataset.batchify_join_str, shuffle=True, num_workers=1)
         t_total = len(train_dataloader) // args.gradient_accumulation_steps * args.num_train_epochs
     else: # test
-        val_dataset = SelectionDataset(os.path.join(args.train_dir, args.testset, '.txt'),
+        val_dataset = SelectionDataset(os.path.join(args.train_dir, '{}.txt'.format(args.testset)),
                                                                   context_transform, response_transform, sample_cnt=None)
 
     val_dataloader = DataLoader(val_dataset, batch_size=args.eval_batch_size, collate_fn=val_dataset.batchify_join_str, shuffle=False, num_workers=1)
