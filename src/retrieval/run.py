@@ -151,6 +151,7 @@ if __name__ == '__main__':
     parser.add_argument("--eval", action="store_true")
     parser.add_argument("--model_type", default='bart', type=str)
     parser.add_argument("--output_dir", required=True, type=str)
+    parser.add_argument("--model_in", default='../../model/fashion/bart-base/best_model/', type=str)
     parser.add_argument("--model_out", default = '../../model/fashion', type = str)
     parser.add_argument("--train_dir", default='../data/simmc_fashion', type=str)
     parser.add_argument("--testset", default='devtest', type=str)
@@ -211,7 +212,7 @@ if __name__ == '__main__':
 
     print('=' * 80)
     print('Train dir:', args.train_dir)
-    print('Pretrained model dir:', args.bart_model)
+    print('Pretrained model dir:', args.model_in)
     print('Trained model dir:', args.model_out)
     print('Output dir:', args.output_dir)
     print('=' * 80)
@@ -248,13 +249,13 @@ if __name__ == '__main__':
     ########################################
     ## build BART encoder
     ########################################
-    bart_config = ConfigClass.from_json_file(os.path.join(args.bart_model, 'config.json'))
+    bart_config = ConfigClass.from_json_file(os.path.join(args.model_in, 'config.json'))
     if args.use_pretrain and not args.eval:
-        previous_model_file = os.path.join(args.bart_model, "pytorch_model.bin")
+        previous_model_file = os.path.join(args.model_in, "pytorch_model.bin")
         print('Loading parameters from', previous_model_file)
         log_wf.write('Loading parameters from %s' % previous_model_file + '\n')
         model_state_dict = torch.load(previous_model_file, map_location="cpu")
-        bart = BertModelClass.from_pretrained(args.bart_model, state_dict=model_state_dict)
+        bart = BertModelClass.from_pretrained(args.model_in, state_dict=model_state_dict)
         del model_state_dict
     else:
         bart = BertModelClass(bart_config)
