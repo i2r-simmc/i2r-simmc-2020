@@ -43,7 +43,7 @@ def check_dir_exist():
     
 def export_scores_json(results_out):
     
-    with open(os.path.join(args.train_dir, args.testset, '_candidates.json')) as f:
+    with open(os.path.join(args.train_dir,'{}_candidates.json'.format(args.testset)) as f:
         candidates = json.load(f)
     output = []
     idx = 0
@@ -276,6 +276,8 @@ if __name__ == '__main__':
         test_result = eval_running_model(val_dataloader, test=True)
         if (args.testset == "devtest"):
             print (test_result)
+        elif (args.testset == "test-std"):
+            print ('Output scores json file is saved at ', args.out_dir
         exit()
         
     no_decay = ["bias", "LayerNorm.weight"]
