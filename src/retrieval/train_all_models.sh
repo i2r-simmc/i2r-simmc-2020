@@ -1,16 +1,16 @@
 # Train Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
 # Select domain as appropriate
-DOMAIN="fashion"
-#DOMAIN="furniture"
+#DOMAIN="fashion"
+DOMAIN="furniture"
 TESTSET="devtest"
 #TESTSET="test-std"
 
 BART_MODEL="bart-base"
 #BART_MODEL="bart-large"
 
-ARCHITECTURE="bi"
-#ARCHITECTURE="poly"
+#ARCHITECTURE="bi"
+ARCHITECTURE="poly"
 #ARCHITECTURE="both"
 POLY_M=16
 
