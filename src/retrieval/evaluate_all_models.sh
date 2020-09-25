@@ -38,9 +38,11 @@ then
     MODEL_OUT="../../model/${DOMAIN}/poly-encoder/best_model/"
 fi
 
+GPU=1
+
 echo "Performing evaluation for ${DOMAIN} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
 python3 run.py --bart_model ${BART_MODEL} --model_in ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
- --testset ${TESTSET} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M} --eval 
+ --testset ${TESTSET} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M} --gpu ${GPU} --eval 
 
 #python3 run.py --domain ${DOMAIN} --bart_model ${MODEL_DIR} --model_out ${MODEL_DIR} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --testset ${TESTSET} --use_pretrain --architecture poly --poly_m ${POLY_M} --eval
