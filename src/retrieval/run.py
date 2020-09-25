@@ -139,7 +139,8 @@ def eval_running_model(dataloader, test=False):
         }
     if test:
         export_scores_json(list(results_out))
-        export_results(result)
+        if (args.testset == 'devtest'):
+            export_results(result)
         
     return result
 
@@ -273,7 +274,8 @@ if __name__ == '__main__':
         print('Loading parameters from', state_save_path)
         model.load_state_dict(torch.load(state_save_path))
         test_result = eval_running_model(val_dataloader, test=True)
-        print (test_result)
+        if (args.testset == "devtest"):
+            print (test_result)
         exit()
         
     no_decay = ["bias", "LayerNorm.weight"]
