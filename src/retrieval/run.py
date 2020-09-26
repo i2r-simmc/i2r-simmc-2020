@@ -138,7 +138,8 @@ def eval_running_model(dataloader, test=False):
             'MRR': np.mean(mrr),
         }
     if test:
-        export_scores_json(list(results_out))
+        if args.generate:
+            export_scores_json(list(results_out))
         if (args.testset == 'devtest'):
             export_results(result)
         
@@ -150,6 +151,7 @@ if __name__ == '__main__':
     ## Required parameters
     parser.add_argument("--bart_model", default='bart-base/', type=str)
     parser.add_argument("--eval", action="store_true")
+    parser.add_argument("--generate", action="store_true")
     parser.add_argument("--model_type", default='bart', type=str)
     parser.add_argument("--output_dir", required=True, type=str)
     parser.add_argument("--model_in", default='../../model/fashion/bart-base/best_model/', type=str)
@@ -274,9 +276,9 @@ if __name__ == '__main__':
         print('Loading parameters from', state_save_path)
         model.load_state_dict(torch.load(state_save_path))
         test_result = eval_running_model(val_dataloader, test=True)
-        if (args.testset == "devtest"):
+        if (args.testset == "devtest") and not args.generate:
             print (test_result)
-        elif (args.testset == "test-std"):
+        elif args.generate:
             print ('Output scores json file is saved at ', args.output_dir)
         exit()
         
