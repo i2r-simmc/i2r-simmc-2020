@@ -62,7 +62,7 @@ The scripts support the following pre-trained models for the joint learning task
 		- The default model name is "facebook/bart-large", the default GPU card ID is 0, the default testing batch size is 20.
 - The generation output files can be found at the followings:
 	- output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-<test_split_name>-\<domain\>-\<task\>.json
-	- <model_type> is dedued from <model_name>
+	- <model_type> is deduced from <model_name>
 	- \<task\>: subtask-1, subtask-2-generation, and subtask-3
 
 # Retrieval
@@ -84,7 +84,7 @@ The scripts support the following pre-trained models for the joint learning task
 - $ bash generate.sh
 - The generation output files can be found at the followings:
 	- output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-<test_split_name>-\<domain\>-subtask-2-retrieval.json
-	- <model_type> is dedued from $ARCHITECTURE
+	- <model_type> is deduced from $ARCHITECTURE
 
 # Evaluation
 - Evaluation scripts are written for `devtest` dataset, assuming that the scripts evaluate all turns in \<domain\>_\<dataset\>_dials.json and that the json files contain the ground-truth of all the turns.
