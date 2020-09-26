@@ -3,16 +3,16 @@
 GPU=0
 
 # Select domain as appropriate
-#DOMAIN="fashion"
-DOMAIN="furniture"
+DOMAIN="fashion"
+#DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
 #TEST_SPLIT_NAME="test-std"
 
 BART_MODEL="bart-base"
 #BART_MODEL="bart-large"
 
-ARCHITECTURE="bi"
-#ARCHITECTURE="poly"
+#ARCHITECTURE="bi"
+ARCHITECTURE="poly"
 #ARCHITECTURE="both"
 
 
@@ -46,5 +46,3 @@ echo "Performing training for ${DOMAIN} dataset with ${BART_MODEL} and ${MODEL_L
 # Run training for bi-encoder and poly-encoder
 python3 run.py --bart_model ${BART_MODEL} --model_in ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
 --testset ${TEST_SPLIT_NAME} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M} --gpu ${GPU} --set_seed --seed 10
-
-#python3 run.py --bart_model ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} --use_pretrain --architecture poly --poly_m ${POLY_M}
