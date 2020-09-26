@@ -2,10 +2,10 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-GPU=1
+GPU=0
 
-DOMAIN="fashion"
-#DOMAIN="furniture"
+#DOMAIN="fashion"
+DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
 #TESTSET="test-std"
 
