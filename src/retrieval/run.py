@@ -59,7 +59,7 @@ def export_scores_json(results_out):
     if (args.testset=='test-std'):
         output_path = os.path.join(args.output_dir, 'dstc9-simmc-teststd-{}-subtask-2-retrieval.json'.format(args.domain))
     else:
-        output_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain, args.architecture, args.poly_m))
+        output_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain))
     with open(output_path, 'w') as outfile:
         json.dump(output, outfile)    
 
