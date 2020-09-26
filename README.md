@@ -16,18 +16,14 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 		- \<domain\> is either `fashion` or `furniture`
 		- <model_type>: `bart-large`, `bart-base`, `poly-encoder`, or `bi-encoder`
 - $ mkdir -p output/fashion && mkdir output/furniture
-	- Output JSON files are stored at output/\<domain\>/<model_type_combined>/<dataset>/dstc9-simmc-<dataset>-\<domain\>-<task>.json
+	- Output JSON files are stored at output/\<domain\>/<model_type_combined>/\<dataset\>/dstc9-simmc-\<dataset\>-\<domain\>-\<task\>.json
 		- <model_type_combined>: `bart-large_poly-encoder`, `bart-large_ bi-encoder`, `bart-base_poly-encoder`, `bart-base_bi-encoder`
-		- <dataset>: devtest, test-std
-		- <task>: subtask-1, subtask-2-generation, subtask-2-retrieval, subtask-3
-	- For `devtest` dataset, the performance reports are stored at output/\<domain\>/<model_type_combined>/<dataset>/report.joint-learning.csv,report.retrieval.csv
+		- \<dataset\>: devtest, test-std
+		- \<task\>: subtask-1, subtask-2-generation, subtask-2-retrieval, subtask-3
+	- For `devtest` dataset, the performance reports are stored at output/\<domain\>/<model_type_combined>/\<dataset\>/report.joint-learning.csv,report.retrieval.csv
 
-# Installation (joint learning model)
+# Installation
 - $ cd src
-- $ pip install -r requirements.txt
-
-# Installation (retrieval model)
-- $ cd src/retrieval
 - $ pip install -r requirements.txt
 
 # Joint learning
@@ -56,7 +52,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 
 # Retrieval
 ## Data pre-processing 
-- Edit src/preprocess_retrieval.sh (TESTSET=`devtest` or `test-std`)
+- Edit src/preprocess_retrieval.sh ($TESTSET=`devtest` or `test-std`)
 - $ bash src/preprocess_retrieval.sh 
 	- We assume that the files of the `test-std` set are named e.g. fashion_test-std_dials.json. If not, lines 18 and 34 of preprocess_retrieval.sh should be changed accordingly.
 
@@ -71,8 +67,8 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 - $ bash evaluate_all_models.sh
 
 # Evaluation outputs
-- The output JSON files can be found at output/\<domain\>/outputs.<TESTSET>.json (TESTSET=`devtest` or `test-std`)
-- `devtest`: The performance results can be found at output/\<domain\>/reports.<TESTSET>.joint.csv,reports.<TESTSET>.retrieval.csv (TESTSET=`devtest` or `test-std`)
+- The output JSON files can be found at output/\<domain\>/outputs.\<TESTSET\>.json ($TESTSET=`devtest` or `test-std`)
+- `devtest`: The performance results can be found at output/\<domain\>/reports.\<TESTSET\>.joint.csv,reports.\<TESTSET\>.retrieval.csv ($TESTSET=`devtest` or `test-std`)
 
 # References
 - Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A., Levy, O., … Zettlemoyer, L. (2020). BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension. In ACL. Retrieved from http://arxiv.org/abs/1910.13461
