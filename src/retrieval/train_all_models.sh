@@ -1,10 +1,10 @@
 # Train Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-GPU=0
+GPU=1
 
 # Select domain as appropriate
-DOMAIN="fashion"
-#DOMAIN="furniture"
+#DOMAIN="fashion"
+DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
 #TEST_SPLIT_NAME="test-std"
 
