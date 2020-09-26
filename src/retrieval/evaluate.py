@@ -52,6 +52,18 @@ def evaluate_response_retrieval(gt_responses, model_scores, single_round_eval=Fa
         "mrr": np.mean(1 / gt_ranks),
     }
 
+def export_results(results):
+    results_path = os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m))                        
+    if not os.path.isfile(results_path):
+        with open(os.path.join(args.output_dir, '{}-subtask-2-retrieval-results.csv'.format(args.domain), 'w') as csvfile:
+            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)   
+            filewriter.writerow(['Model', 'r@1', 'r@5', 'r@10', 'Mean Rank', 'MRR'])
+            filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['r1'], results['r5'], results['r10'], results['mean'], results['mrr']])
+    else:
+        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m)), 'a') as csvfile:
+            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)   
+            filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['r1'], results['r5'], results['r10'], results['mean'], results['mrr']])
+
 scores_json_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain))
 gt_json_path = os.path.join(args.train_dir, '{}_{}_dials_retrieval_candidates.json'.format(args.domain, args.mode))
 
@@ -72,3 +84,6 @@ else:
           
 retrieval_metrics = evaluate_response_retrieval(gt_responses, model_scores, single_round_evaluation)
 print(retrieval_metrics)
+
+if (mode==devtest):
+    export_results(retrieval_metrics)
