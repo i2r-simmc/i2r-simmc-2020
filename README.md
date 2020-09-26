@@ -41,14 +41,20 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 		- e.g. $ bash train.sh fashion 0 1e-5 3
 		- The default learning_rate is 1e-5, default batch size is 3, if you encounter CUDA memory issue, please reduce batch size to 2 or 1.
 
-## Evaluation 
+## Generation 
+- Generate trained model outputs for Sub-Task #1, Sub-Task #2 Generation and Sub-Task #3 together with specific domain
 - $ cd src/
-- $ bash generate.sh \<domain\>
+- $ bash generate.sh \<domain\> <test_split_name>
+	- e.g. $ bash generate.sh fashion
 	- Optionally, you can generate with specified setting including gpu_id, testing batch size and testing split name
 	- Testing split name can be `devtest` or `test-std` based on the file you want to test.
-	- $ bash generate.sh \<domain\> <gpu_id> <learning_rate> <testing_split_name>
+	- $ bash generate.sh \<domain\> <test_split_name> <gpu_id> <test_batch_size>
 	- e.g. $ bash generate.sh fashion 0 20 devtest
 	- The default testing batch size is 20, if you encounter CUDA memory issue, please reduce testing batch size.
+- The generation output files of `devtest` dataset for subtasks #1,#2 (generation),#3 can be found at the followings:
+	- output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1.json
+	- output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-2-generation.json
+	- output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-3.json, respectively.
 
 # Retrieval
 ## Data pre-processing 
@@ -61,12 +67,44 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 - $ cd src/retrieval
 - $ bash train_all_models.sh
 
-## Evaluation 
+## Generation
+
+# Evaluation
+## Evaluation (Joint learning)
+- Evaluate Sub-Task #1, Sub-Task #2 Generation and Sub-Task #3 together with specific domain
+- $ cd src/
+- $ bash evaluate_all.sh \<domain\> <test_split_name>
+	- e.g. $ bash evaluate_all.sh fashion devtest
+- The performance report for the non-retrieval tasks can be found at output/\<domain\>/<combined_model_name>/<test_split_name>/report.joint-learning.csv
+
+## (Optionally) Evaluation for subtasks individually (Joint learning)
+### Testing for Sub-Task #1
+- Evaluation for subtask#1 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
+- $ cd src/
+- $ bash evaluate_subtask1.sh \<domain\> <test_split_name>
+- Eg: $ bash evaluate_subtask1.sh fashion devtest
+- The results can be retrieved from `output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1-report.json`
+
+### Testing for Sub-Task #2 Generation
+- Evaluation for subtask#2 generation with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
+- $ cd src/
+- $ bash evaluate_subtask2.sh \<domain\> <test_split_name>
+- Eg: $ bash evaluate_subtask2.sh fashion devtest
+- The results can be retrieved from `output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-2-generation-report.json`
+
+### Testing for Sub-Task #3
+- Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
+- $ cd src/
+- $ bash evaluate_subtask3.sh \<domain\> <test_split_name>
+- Eg: $ bash evaluate_subtask3.sh fashion devtest
+- The results can be retrieved from `output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-3-report.json`
+
+## Evaluation (Retrieval)
 - Edit src/retrieval/evaluate_all_models.sh ($DOMAIN=`fashion` or `furniture`, $TESTSET=`devtest` or `test-std`)
 - $ cd src/retrieval
 - $ bash evaluate_all_models.sh
 
-# Evaluation outputs
+## Evaluation outputs
 - The output JSON files can be found at output/\<domain\>/outputs.\<TESTSET\>.json ($TESTSET=`devtest` or `test-std`)
 - `devtest`: The performance results can be found at output/\<domain\>/reports.\<TESTSET\>.joint.csv,reports.\<TESTSET\>.retrieval.csv ($TESTSET=`devtest` or `test-std`)
 
