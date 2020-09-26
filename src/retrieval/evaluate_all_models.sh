@@ -38,7 +38,7 @@ then
     MODEL_OUT="../../model/${DOMAIN}/poly-encoder/best_model/"
 fi
 
-GPU=0
+GPU=1
 
 echo "Performing evaluation for ${DOMAIN} ${TESTSET} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
