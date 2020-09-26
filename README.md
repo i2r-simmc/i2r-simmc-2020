@@ -20,7 +20,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 		- <model_type_combined>: `bart-large_poly-encoder`, `bart-large_ bi-encoder`, `bart-base_poly-encoder`, `bart-base_bi-encoder`
 		- \<dataset\>: devtest, test-std
 		- \<task\>: subtask-1, subtask-2-generation, subtask-2-retrieval, subtask-3
-	- For `devtest` dataset, the performance reports are stored at output/\<domain\>/<model_type_combined>/\<dataset\>/report.joint-learning.csv,report.retrieval.csv
+	- Performance reports are stored at output/\<domain\>/<model_type_combined>/\<dataset\>/report.joint-learning.csv, report.retrieval.csv
 
 # Installation
 - $ cd src
