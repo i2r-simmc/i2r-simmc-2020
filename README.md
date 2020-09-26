@@ -3,7 +3,7 @@ Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), 
 # Overview
 We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 2020) for generating outputs of the tasks (Sub-Task #1, Sub-Task #2 Response, Sub-Task #3) in a single string, called joint learning model, and another model based on Poly-Encoder (Humeau et al., 2019) for generating outputs of the Sub-Task #2 Retrieval task, called retrieval model. The retrieval model utilizes the BART encoder fine-tuned by the joint learning model. The two models are trained and evaluated separately.
 
-The scripts support the following pre-trained models for the joint learning tasks: facebook/bart-base and facebook/bart-large. They also support the following models for the retrieval task: bi-encoder and poly-encoder. They generate outputs of the following four combinations of the models:
+The scripts support the following pre-trained models for the joint learning tasks: facebook/bart-base and facebook/bart-large. They also support the following models for the retrieval task: bi-encoder and poly-encoder. They generate outputs of the aforementioned four models independently. Based on the outputs, we can report performance estimates of the following four combinations:
 - bart-base + bi-encoder
 - bart-base + poly-encoder
 - bart-large + bi-encoder
@@ -22,11 +22,12 @@ The scripts support the following pre-trained models for the joint learning task
 		- \<domain\> is either `fashion` or `furniture`
 		- <model_type>: `bart-large`, `bart-base`, `poly-encoder`, or `bi-encoder`
 - $ mkdir -p output/fashion && mkdir output/furniture
-	- Output JSON files are stored at output/\<domain\>/<model_type_combined>/\<dataset\>/dstc9-simmc-\<dataset\>-\<domain\>-\<task\>.json
-		- <model_type_combined>: `bart-large_poly-encoder`, `bart-large_ bi-encoder`, `bart-base_poly-encoder`, `bart-base_bi-encoder`
+	- Output JSON files are stored at output/\<domain\>/<model_type>/\<dataset\>/dstc9-simmc-\<dataset\>-\<domain\>-\<task\>.json
 		- \<dataset\>: devtest, test-std
 		- \<task\>: subtask-1, subtask-2-generation, subtask-2-retrieval, subtask-3
-	- Performance reports are stored at output/\<domain\>/<model_type_combined>/\<dataset\>/report.joint-learning.csv, report.retrieval.csv
+			- If <model_type> is `bi-encoder` or `poly-encoder`, it only saves subtask-2-retrieval task's outputs
+			- If <model_type> is `bart-large` or `bart-base`, it saves the other tasks' outputs
+	- Performance reports are stored at output/\<domain\>/<model_type>/\<dataset\>/report.joint-learning.csv or report.retrieval.csv, accordingly
 
 # Installation
 - $ cd src
@@ -36,33 +37,33 @@ The scripts support the following pre-trained models for the joint learning task
 ## Data pre-processing 
 - $ cd src
 - $ bash preprocess.sh
-	- We assume that the files of the `test-std` set are named e.g. fashion_test-std_dials.json. If not, lines 11, 37, 43, 50 and 59 of preprocess.sh and the `test_split_name` in the evaluation script below should be changed accordingly.
+	- We assume that the files of the `test-std` set are named e.g. fashion_test-std_dials.json. If not, line 69 of preprocess.sh and the <test_split_name> in the scripts below should be changed accordingly.
 
 ## Training 
+- Train with the pre-processed data and save model files under the "model" folder
 - $ cd src
 - $ bash train.sh \<domain\>
-	- \<domain\> is either `fashion` or `furniture`
-	- Optionally, you can train `fashion` and `furniture` dataset with specified setting including model_name, gpu_id, learning_rate and batch_size
+	- \<domain\>: `fashion`, `furniture`
+	- Optionally, you can train with specific settings, including model_name, gpu_id, learning_rate and batch_size
 		- $ bash train.sh \<domain\> <model_name> <gpu_id> <learning_rate> <batch_size>
-		- model name can be "facebook/bart-large" or "facebook/bart-base"
+			- <model_name>: "facebook/bart-large", "facebook/bart-base"
 		- e.g. $ bash train.sh fashion "facebook/bart-large" 0 1e-5 3
-		- The default learning_rate is 1e-5, default batch size is 3, if you encounter CUDA memory issue, please reduce batch size to 2 or 1.
+		- The default model_name is "facebook/bart-large", the default GPU card ID is 0, the default learning_rate is 1e-5, and the default batch size is 3.
 
 ## Generation 
-- Generate trained model outputs for Sub-Task #1, Sub-Task #2 Generation and Sub-Task #3 together with specific domain
+- Generate the outputs of the trained model for Sub-Task #1, Sub-Task #2 Generation and Sub-Task #3 together 
 - $ cd src/
 - $ bash generate.sh \<domain\> <test_split_name>
-	- e.g. $ bash generate.sh fashion
-	- Optionally, you can generate with specified setting including model_name, gpu_id, testing batch size and testing split name
-	- model name can be "facebook/bart-large" or "facebook/bart-base"
-	- Testing split name can be `devtest` or `test-std` based on the file you want to test.
-	- $ bash generate.sh \<domain\> <test_split_name> <model_name> <gpu_id> <test_batch_size>
-	- e.g. $ bash generate.sh fashion devtest "facebook/bart-large" 0 20
-	- The default testing batch size is 20, if you encounter CUDA memory issue, please reduce testing batch size.
-- The generation output files of `devtest` dataset for subtasks #1,#2 (generation),#3 can be found at the followings:
-	- output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1.json
-	- output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-2-generation.json
-	- output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-3.json, respectively.
+	- <test_split_name>: `devtest`, `test-std`
+	- e.g. $ bash generate.sh fashion devtest
+	- Optionally, you can generate with specified settings, including model_name, gpu_id, testing batch size and testing split name
+		- $ bash generate.sh \<domain\> <test_split_name> <model_name> <gpu_id> <test_batch_size>
+		- e.g. $ bash generate.sh fashion devtest "facebook/bart-large" 0 20
+		- The default model name is "facebook/bart-large", the default GPU card ID is 0, the default testing batch size is 20.
+- The generation output files can be found at the followings:
+	- output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-<test_split_name>-\<domain\>-\<task\>.json
+	- <model_type> is dedued from <model_name>
+	- \<task\>: subtask-1, subtask-2-generation, and subtask-3
 
 # Retrieval
 ## Data pre-processing 
@@ -72,7 +73,8 @@ The scripts support the following pre-trained models for the joint learning task
 	- We assume that the files of the `test-std` set are named e.g. fashion_test-std_dials.json. If not, lines 18 and 34 of preprocess_retrieval.sh should be changed accordingly.
 
 ## Training 
-- Edit src/retrieval/train_all_models.sh ($DOMAIN=`fashion` or `furniture`)
+- Edit src/retrieval/train_all_models.sh ($DOMAIN=`fashion` or `furniture`, $TEST_SPLIT_NAME=`devtest` or `test-std`, $ARCHITECTURE=`bi` or `poly`)
+	- `bi`: bi-encoder, `poly`: poly-encoder
 - $ cd src/retrieval
 - $ bash train_all_models.sh
 
@@ -86,7 +88,7 @@ The scripts support the following pre-trained models for the joint learning task
 - $ cd src/
 - $ bash evaluate_all.sh \<domain\> <test_split_name> <model_name>
 	- e.g. $ bash evaluate_all.sh fashion devtest "facebook/bart-large"
-- The performance report for the non-retrieval tasks can be found at output/\<domain\>/<combined_model_name>/<test_split_name>/report.joint-learning.csv
+- The performance report for the non-retrieval tasks can be found at output/\<domain\>/<model_type>/<test_split_name>/report.joint-learning.csv
 
 ## (Optionally) Evaluation for subtasks individually (Joint learning)
 ### Testing for Sub-Task #1
@@ -94,30 +96,26 @@ The scripts support the following pre-trained models for the joint learning task
 - $ cd src/
 - $ bash evaluate_subtask1.sh \<domain\> <test_split_name> <model_name>
 - Eg: $ bash evaluate_subtask1.sh fashion devtest "facebook/bart-large"
-- The results can be retrieved from `output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1-report.json`
+- The results can be retrieved from `output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1-report.json`
 
 ### Testing for Sub-Task #2 Generation
 - Evaluation for subtask#2 generation with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
 - $ cd src/
 - $ bash evaluate_subtask2.sh \<domain\> <test_split_name> <model_name>
 - Eg: $ bash evaluate_subtask2.sh fashion devtest "facebook/bart-large"
-- The results can be retrieved from `output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-2-generation-report.json`
+- The results can be retrieved from `output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-2-generation-report.json`
 
 ### Testing for Sub-Task #3
 - Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
 - $ cd src/
 - $ bash evaluate_subtask3.sh \<domain\> <test_split_name> <model_name>
 - Eg: $ bash evaluate_subtask3.sh fashion devtest "facebook/bart-large"
-- The results can be retrieved from `output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-3-report.json`
+- The results can be retrieved from `output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-3-report.json`
 
 ## Evaluation (Retrieval)
 - Edit src/retrieval/evaluate_all_models.sh ($DOMAIN=`fashion` or `furniture`, $TESTSET=`devtest` or `test-std`)
 - $ cd src/retrieval
 - $ bash evaluate_all_models.sh
-
-## Evaluation outputs
-- The output JSON files can be found at output/\<domain\>/outputs.\<TESTSET\>.json ($TESTSET=`devtest` or `test-std`)
-- `devtest`: The performance results can be found at output/\<domain\>/reports.\<TESTSET\>.joint.csv,reports.\<TESTSET\>.retrieval.csv ($TESTSET=`devtest` or `test-std`)
 
 # References
 - Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A., Levy, O., … Zettlemoyer, L. (2020). BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension. In ACL. Retrieved from http://arxiv.org/abs/1910.13461
