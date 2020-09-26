@@ -53,14 +53,14 @@ def evaluate_response_retrieval(gt_responses, model_scores, single_round_eval=Fa
     }
 
 def export_results(results):
-    results_path = os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m))                        
+    results_path = os.path.join(args.output_dir, '{}-subtask-2-retrieval-results.csv'.format(args.domain))                        
     if not os.path.isfile(results_path):
-        with open(os.path.join(args.output_dir, '{}-subtask-2-retrieval-results.csv'.format(args.domain), 'w') as csvfile:
+        with open(results_path, 'w') as csvfile:
             filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)   
             filewriter.writerow(['Model', 'r@1', 'r@5', 'r@10', 'Mean Rank', 'MRR'])
             filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['r1'], results['r5'], results['r10'], results['mean'], results['mrr']])
     else:
-        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m)), 'a') as csvfile:
+        with open(results_path, 'a') as csvfile:
             filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)   
             filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['r1'], results['r5'], results['r10'], results['mean'], results['mrr']])
 
@@ -87,3 +87,4 @@ print(retrieval_metrics)
 
 if (mode==devtest):
     export_results(retrieval_metrics)
+    print('Devtest results exported to csv at {}'.format(os.path.join(args.output_dir, '{}-subtask-2-retrieval-results.csv'.format(args.domain))))
