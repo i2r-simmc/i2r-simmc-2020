@@ -1,10 +1,14 @@
 DOMAIN=$1
-LOCAL_RANK=${2:-0}
-TEST_BATCH_SIZE=${3:-20}
-TEST_SPLIT=${4:-devtest}
+TEST_SPLIT=${2:-devtest}
+MODEL=${3:-"facebook/bart-large"}
+LOCAL_RANK=${4:-0}
+TEST_BATCH_SIZE=${5:-20}
+JOINT_MODEL_NAME="${MODEL/facebook\//}"
+MODEL_TYPE_COMBINED=${JOINT_MODEL_NAME}_poly-encoder
 ROOT=../data/simmc_$DOMAIN
-OUTPUT_ROOT=../output/$DOMAIN
-MODEL="facebook/bart-large"
+OUTPUT_ROOT=../output/$DOMAIN/$MODEL_TYPE_COMBINED/$TEST_SPLIT
+
+mkdir -p ${OUTPUT_ROOT}
 
 python main.py \
     --action=generate \
@@ -12,7 +16,7 @@ python main.py \
     --test_data_src="$ROOT"/${DOMAIN}_${TEST_SPLIT}_dials_predict.txt \
     --encoder_decoder_model_name_or_path=$MODEL \
     --model_metainfo_path="$ROOT"/${DOMAIN}_model_metainfo.json \
-    --test_output_pred="$OUTPUT_ROOT"/output.json \
+    --test_output_pred="$OUTPUT_ROOT"/dstc9-simmc-${TEST_SPLIT}-${DOMAIN}-joint_output.json \
     --domain=$DOMAIN \
     --local_rank=$LOCAL_RANK \
     --test_batch_size=$TEST_BATCH_SIZE \
@@ -23,10 +27,10 @@ python main.py \
     --action=postprocess \
     --config_file=../config/simmc_transformers_fusion_${DOMAIN}.yml \
     --encoder_decoder_model_name_or_path=$MODEL \
-    --test_output_pred="$OUTPUT_ROOT"/output.json \
-    --test_data_output_subtask1="$OUTPUT_ROOT"/output_subtask1.json \
-    --test_data_output_subtask2="$OUTPUT_ROOT"/output_subtask2.json \
-    --test_data_output_subtask3="$OUTPUT_ROOT"/output_subtask3.json \
+    --test_output_pred="$OUTPUT_ROOT"/dstc9-simmc-${TEST_SPLIT}-${DOMAIN}-joint_output.json \
+    --test_data_output_subtask1="$OUTPUT_ROOT"/dstc9-simmc-${TEST_SPLIT}-${DOMAIN}-subtask-1.json \
+    --test_data_output_subtask2="$OUTPUT_ROOT"/dstc9-simmc-${TEST_SPLIT}-${DOMAIN}-subtask-2-generation.json \
+    --test_data_output_subtask3="$OUTPUT_ROOT"/dstc9-simmc-${TEST_SPLIT}-${DOMAIN}-subtask-3.json \
     --test_data_original_file="$ROOT"/${DOMAIN}_${TEST_SPLIT}_dials.json \
     --domain=$DOMAIN \
     --local_rank=$LOCAL_RANK \

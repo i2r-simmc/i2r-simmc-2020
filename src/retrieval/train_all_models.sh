@@ -37,7 +37,7 @@ if [ ${ARCHITECTURE} == "bi" ]
 then
     MODEL_OUT="../../model/${DOMAIN}/bi-encoder/best_model/"
 elif [ ${ARCHITECTURE} == "poly" ]
-then 
+then
     MODEL_OUT="../../model/${DOMAIN}/poly-encoder/best_model/"
 fi
 

@@ -188,7 +188,7 @@ def post_process(config):
             if is_fashion:
                 attributes = list(filter(lambda x: x, map(str.strip, attributes.split(' '))))
                 predictions.append({
-                    'turn_idx': turn['turn_idx'],
+                    'turn_id': turn['turn_idx'],
                     'action': action,
                     'action_log_prob': action_log_probs[count],
                     'attributes': {
@@ -209,7 +209,7 @@ def post_process(config):
                         else:
                             attribute_dict[kv_pair_split[0].strip()] = kv_pair_split[1].strip()
                 predictions.append({
-                    'turn_idx': turn['turn_idx'],
+                    'turn_id': turn['turn_idx'],
                     'action': action,
                     'action_log_prob': action_log_probs[count],
                     'attributes': attribute_dict
@@ -245,6 +245,7 @@ def post_process(config):
         for turn in d['dialogue']:
             response = subtask2[count].strip()
             predictions.append({
+                'turn_id': turn['turn_idx'],
                 'response': response
             })
             count += 1
@@ -273,12 +274,17 @@ def generation(config):
     def collate(examples):
         src_list = list(map(lambda x: x[0], examples))
         src_mask_list = list(map(lambda x: x[1], examples))
-        tgt_list = list(map(lambda x: x[2], examples))
+        
         if tokenizer_enc._pad_token is None:
             src_pad = pad_sequence(src_list, batch_first=True)
         else:
             src_pad = pad_sequence(src_list, batch_first=True, padding_value=tokenizer_enc.pad_token_id)
         src_mask_pad = pad_sequence(src_mask_list, batch_first=True, padding_value=0)
+
+        if len(examples[0]) == 2:        
+            return src_pad, src_mask_pad
+
+        tgt_list = list(map(lambda x: x[2], examples))
         if tokenizer_dec._pad_token is None:
             tgt_pad = pad_sequence(tgt_list, batch_first=True)
         else:
@@ -313,7 +319,7 @@ def generation(config):
             action_log_probs = []
             src = batch[0].to(config['device'])
             src_mask = batch[1].to(config['device'])
-            tgt = batch[2].to(config['device'])
+            
             generated, logits = model.generate(src,
                                        max_length=200 if config['name'] == 'simmc-fusion' else 60,
                                        decoder_start_token_id=tokenizer_dec.pad_token_id,
@@ -329,7 +335,9 @@ def generation(config):
                 flag = 0
                 for j in range(len(generated[i])):
                     if generated[i][j].item() not in [tokenizer_enc.cls_token_id, tokenizer_enc.bos_token_id,
-                                                      tokenizer_enc.pad_token_id, tokenizer_enc.eos_token_id]:
+                                                      tokenizer_enc.pad_token_id, tokenizer_enc.eos_token_id,
+                                                      tokenizer_enc.cls_token_id, tokenizer_enc.sep_token_id,
+                                                      tokenizer_enc.mask_token_id, tokenizer_enc.unk_token_id]:
                         flag = 1
                         break
                 if flag:
@@ -342,6 +350,10 @@ def generation(config):
                 'log_probs': action_log_probs[i]
             } for i in range(len(generated))]
             results += result_lines
+
+    output_dir = os.path.dirname(config['test_output_pred'])
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     save_json(results, config['test_output_pred'])
 
 
@@ -475,6 +487,10 @@ if __name__ == '__main__':
     cfg['test_output_pred'] = args.test_output_pred
     cfg['model_metainfo_path'] = args.model_metainfo_path
     cfg['encoder_decoder_model_name_or_path'] = args.encoder_decoder_model_name_or_path
+    model_name = args.encoder_decoder_model_name_or_path if '/' not in args.encoder_decoder_model_name_or_path else \
+        args.encoder_decoder_model_name_or_path[args.encoder_decoder_model_name_or_path.rindex('/')+1:]
+    cfg['save_model_file'] = cfg['save_model_file'] % model_name
+    cfg['load_model_file'] = cfg['load_model_file'] % model_name
     if 'train' == args.action:
         train(cfg)
     elif 'generate' == args.action:
