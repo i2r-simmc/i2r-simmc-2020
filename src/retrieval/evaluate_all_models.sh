@@ -2,8 +2,8 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-#DOMAIN="fashion"
-DOMAIN="furniture"
+DOMAIN="fashion"
+#DOMAIN="furniture"
 #TESTSET="devtest"
 TESTSET="test-std"
 
