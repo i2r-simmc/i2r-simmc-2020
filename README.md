@@ -70,15 +70,21 @@ The scripts support the following pre-trained models for the joint learning task
 - Edit src/preprocess_retrieval.sh ($TESTSET=`devtest` or `test-std`)
 - $ cd src
 - $ bash preprocess_retrieval.sh 
-	- We assume that the files of the `test-std` set are named e.g. fashion_test-std_dials.json. If not, lines 18 and 34 of preprocess_retrieval.sh should be changed accordingly.
+	- We assume that the files of the `test-std` set are named e.g. fashion_test-std_dials.json. If not, line 6 of preprocess_retrieval.sh and $TEST_SPLIT_NAME in the scripts below should be changed accordingly.
 
 ## Training 
-- Edit src/retrieval/train_all_models.sh ($DOMAIN=`fashion` or `furniture`, $TEST_SPLIT_NAME=`devtest` or `test-std`, $ARCHITECTURE=`bi` or `poly`)
-	- `bi`: bi-encoder, `poly`: poly-encoder
+- Edit src/retrieval/train_all_models.sh ($DOMAIN=`fashion` or `furniture`, $ARCHITECTURE=`bi` or `poly`)
+	- `bi` indicates `bi-encoder`, and `poly` indicates `poly-encoder`
 - $ cd src/retrieval
 - $ bash train_all_models.sh
 
 ## Generation
+- Edit src/retrieval/generate.sh ($DOMAIN=`fashion` or `furniture`, $ARCHITECTURE=`bi` or `poly`, $TEST_SPLIT_NAME=`devtest` or `test-std`)
+- $ cd src/retrieval
+- $ bash generate.sh
+- The generation output files can be found at the followings:
+	- output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-<test_split_name>-\<domain\>-subtask-2-retrieval.json
+	- <model_type> is dedued from $ARCHITECTURE
 
 # Evaluation
 - Evaluation scripts are written for `devtest` dataset, assuming that the scripts evaluate all turns in \<domain\>_\<dataset\>_dials.json and that the json files contain the ground-truth of all the turns.
