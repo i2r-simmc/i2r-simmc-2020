@@ -2,7 +2,7 @@
 
 # Generation with Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-GPU=1
+GPU=2
 
 DOMAIN="fashion"
 #DOMAIN="furniture"
