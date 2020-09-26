@@ -3,7 +3,7 @@
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
 GPU=0
-SEED=0
+SEED=1424
 
 #DOMAIN="fashion"
 DOMAIN="furniture"
