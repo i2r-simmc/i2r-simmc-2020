@@ -2,8 +2,8 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-#DOMAIN="fashion"
-DOMAIN="furniture"
+DOMAIN="fashion"
+#DOMAIN="furniture"
 #TESTSET="devtest"
 TESTSET="test-std"
 
@@ -38,7 +38,7 @@ then
     MODEL_OUT="../../model/${DOMAIN}/poly-encoder/best_model/"
 fi
 
-GPU=1
+GPU=0
 
 echo "Performing evaluation for ${DOMAIN} ${TESTSET} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
