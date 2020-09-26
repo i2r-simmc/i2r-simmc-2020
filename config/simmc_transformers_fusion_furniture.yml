@@ -5,8 +5,8 @@ cache_dir:
 remove_space: False
 use_loss_eval: True
 to_save_model: True
-save_model_file: "../model/furniture/best_model_fusion"
-load_model_file: "../model/furniture/best_model_fusion"
+save_model_file: "../model/furniture/bart-large/best_model_fusion"
+load_model_file: "../model/furniture/bart-large/best_model_fusion"
 
 # optimization
 num_epoch: 8

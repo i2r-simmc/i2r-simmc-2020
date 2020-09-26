@@ -47,14 +47,15 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
         Output: line-by-line stringified representation of each turn
     """
     for category in ['fashion', 'furniture']:
-        for split in ['train', 'dev', 'devtest', 'test']:
+        for split in ['train', 'dev']:
             # Load the dialogue data
-            if not os.path.exists(os.path.join(data_path, 'simmc_%s' % category,
-                                               '%s_%s_dials.json' % (category, split))):
+            filepath = os.path.join(data_path, 'simmc_%s' % category,
+                                               '%s_%s_dials.json' % (category, split))
+            if not os.path.exists(filepath):
                 continue
-            with open(os.path.join(data_path, 'simmc_%s' % category, '%s_%s_dials.json' %
-                                                                     (category, split)), 'r') as f_in:
+            with open(filepath, 'r') as f_in:
                 data = json.load(f_in)
+
             if category == 'furniture':
                 if not os.path.exists(os.path.join(data_path, 'simmc_%s' % category, 'furniture_%s_dials_api_calls.json' % split)):
                     continue
@@ -85,10 +86,15 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
 
                 for idx_c, conversation in enumerate(each_dialogue['dialogue']):
                     if not generate_belief_state and not use_action_prediction:
-                        dialogue_dict['dialog'].append({
-                            'answer': conversation['system_transcript'],
-                            'question': conversation['transcript'],
-                        })
+                        if 'system_transcript' in conversation:
+                            dialogue_dict['dialog'].append({
+                                'answer': conversation['system_transcript'],
+                                'question': conversation['transcript'],
+                            })
+                        else:
+                            dialogue_dict['dialog'].append({
+                                'question': conversation['transcript'],
+                            })
                     elif use_action_prediction:
                         if category == 'fashion':
                             action = convert_action(conversation, mm_state)
@@ -115,11 +121,13 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
                                 args_str = ' [ %s ]' % args_str
                             oov.add(action_str)
                             action_str += args_str
+
                         if use_multimodal_contexts:
                             visual_objects = conversation[FIELDNAME_VISUAL_OBJECTS]
                             visual_object_context = represent_visual_objects(visual_objects)
                         else:
                             visual_object_context = None
+                        
                         dialogue_dict['dialog'].append({
                             'answer': conversation['system_transcript'],
                             'question': conversation['transcript'],
@@ -156,6 +164,7 @@ def convert(data_path, generate_belief_state=False, use_multimodal_contexts=Fals
                             'visual_objects': visual_object_context,
                             'target': str_belief_state,
                         })
+
                 converted_data.append(dialogue_dict)
 
             converted_data = {

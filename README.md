@@ -11,9 +11,16 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 	- $ cp -R simmc/data .
 	- $ cp simmc/mm_action_prediction/models/fashion_model_metainfo.json data/simmc_fashion/
 	- $ cp simmc/mm_action_prediction/models/furniture_model_metainfo.json data/simmc_furniture/
-- $ mkdir model && mkdir model/fashion && mkdir model/furniture
-- $ mkdir output && mkdir output/fashion && mkdir output/furniture
-	- The output JSON files are stored under output/fasion,furniture folders
+- $ mkdir -p model/fashion && mkdir model/furniture
+	- Model files are saved at model/\<domain\>/<model_type>/best_model/
+		- \<domain\> is either `fashion` or `furniture`
+		- <model_type>: `bart-large`, `bart-base`, `poly-encoder`, or `bi-encoder`
+- $ mkdir -p output/fashion && mkdir output/furniture
+	- Output JSON files are stored at output/\<domain\>/<model_type_combined>/<dataset>/dstc9-simmc-<dataset>-\<domain\>-<task>.json
+		- <model_type_combined>: `bart-large_poly-encoder`, `bart-large_ bi-encoder`, `bart-base_poly-encoder`, `bart-base_bi-encoder`
+		- <dataset>: devtest, test-std
+		- <task>: subtask-1, subtask-2-generation, subtask-2-retrieval, subtask-3
+	- For `devtest` dataset, the performance reports are stored at output/\<domain\>/<model_type_combined>/<dataset>/report.joint-learning.csv,report.retrieval.csv
 
 # Installation (joint learning model)
 - $ cd src

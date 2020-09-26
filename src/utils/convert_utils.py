@@ -1,7 +1,7 @@
 import json
 import re
 
-from mm_action_prediction.loaders.loader_simmc import evaluate_action_prediction
+from mm_action_prediction.tools.action_evaluation import evaluate_action_prediction
 
 START_OF_MULTIMODAL_CONTEXTS = '<som>'
 END_OF_MULTIMODAL_CONTEXTS = '<eom>'
