@@ -276,7 +276,7 @@ if __name__ == '__main__':
         print('Loading parameters from', state_save_path)
         model.load_state_dict(torch.load(state_save_path))
         test_result = eval_running_model(val_dataloader, test=True)
-        if (args.testset == "devtest") and not args.generate:
+        if not args.generate:
             print (test_result)
         elif args.generate:
             print ('Output scores json file is saved at ', args.output_dir)
