@@ -51,6 +51,7 @@ def export_scores_json(results_out):
         output_dict = {"dialog_id": dial['dialogue_idx'], "candidate_scores": []}
         for turn_num, turn in enumerate(dial['retrieval_candidates']):
             output_turn_dict = {"scores": [], "turn_id": turn_num} 
+            print(idx)
             output_turn_dict["scores"] = results_out[idx]
             #output_dict['candidate_scores'].append(results_out[idx])
             output_dict["candidate_scores"].append(output_turn_dict)
