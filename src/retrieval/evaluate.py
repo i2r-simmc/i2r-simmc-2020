@@ -70,7 +70,5 @@ if (args.testset==teststd):
 else:
     single_round_evaluation = False
           
-retrieval_metrics = evaluate_response_retrieval(
-    gt_responses, model_scores, single_round_evaluation]
-)
+retrieval_metrics = evaluate_response_retrieval(gt_responses, model_scores, single_round_evaluation)
 print(retrieval_metrics)
