@@ -140,7 +140,7 @@ def eval_running_model(dataloader, test=False):
     if test:
         if args.generate:
             export_scores_json(list(results_out))
-        if (args.testset == 'devtest'):
+        if (args.testset == 'devtest') and not args.generate:
             export_results(result)
         
     return result
