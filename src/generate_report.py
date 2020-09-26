@@ -19,10 +19,10 @@ def gen_report(domain, test_split_name, joint_model_name):
     blue4 = None
     dialog_act_f1 = None
     slot_f1 = None
-    output_report_file_path = os.path.join('..', 'output', domain, test_split_name, 'report.joint-learning.csv')
+    output_report_file_path = os.path.join('..', 'output', domain, joint_model_name, test_split_name, 'report.joint-learning.csv')
     for task_id in range(1, 4):
         report_json_file_name = REPORT_FILE_NAMES[task_id - 1] % (test_split_name, domain)
-        file_path = os.path.join('..', 'output', domain, test_split_name, report_json_file_name)
+        file_path = os.path.join('..', 'output', domain, joint_model_name, test_split_name, report_json_file_name)
         if not os.path.exists(file_path):
             return
         report = json.load(open(file_path))
