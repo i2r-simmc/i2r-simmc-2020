@@ -7,8 +7,9 @@ import os
 parser = argparse.ArgumentParser()
 parser.add_argument('--domain', type=str)
 parser.add_argument('--output_dir', required=True, type=str)
-parser.add_argument('--train_dir', default = '../data/', type=str)
-parser.add_argument('--testset', default = 'devtest', type = str)
+parser.add_argument('--train_dir', default='../data/', type=str)
+parser.add_argument('--testset', default='devtest', type=str)
+parser.add_argument('--mode', default='devtest', type=str)
 args = parser.parse_args()
 
 def evaluate_response_retrieval(gt_responses, model_scores, single_round_eval=False):
@@ -51,18 +52,25 @@ def evaluate_response_retrieval(gt_responses, model_scores, single_round_eval=Fa
         "mrr": np.mean(1 / gt_ranks),
     }
 
+scores_json_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain))
+gt_json_path = os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials_retrieval_candidates.json'.format(args.domain, args.domain, args.mode))
 
-print("Reading: {}".format(args["retrieval_json_path"]))
+print("Reading: {}".format(scores_json_path))
 
-with open(os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain)) as infile:
-    scores = json.load(infile)
+with open(scores_json_path, "r") as infile:
+    model_scores = json.load(infile)
 
-print("Reading: {}".format(args["model_score_path"]))
+print("Reading: {}".format(gt_json_path))
 
-with open(os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials_retrieval_candidates.json'.format(args.domain, args.domain, args.mode))) as infile:
-    gt = json.load(infile)
-    
+with open(gt_json_path, "r") as infile:
+    gt_responses = json.load(infile)
+
+if (args.testset==teststd):
+    single_round_evaluation = True
+else:
+    single_round_evaluation = False
+          
 retrieval_metrics = evaluate_response_retrieval(
-    gt_responses, model_scores, args["single_round_evaluation"]
+    gt_responses, model_scores, single_round_evaluation]
 )
 print(retrieval_metrics)
