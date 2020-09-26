@@ -5,8 +5,8 @@
 GPU=1
 SEED=10
 
-DOMAIN="fashion"
-#DOMAIN="furniture"
+#DOMAIN="fashion"
+DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
 #TEST_SPLIT_NAME="test-std"
 
