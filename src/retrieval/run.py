@@ -47,6 +47,7 @@ def export_scores_json(results_out):
         candidates = json.load(f)
     output = []
     idx = 0
+    print("Total length: ", len(results_out))
     for dial in candidates['retrieval_candidates']:
         output_dict = {"dialog_id": dial['dialogue_idx'], "candidate_scores": []}
         for turn_num, turn in enumerate(dial['retrieval_candidates']):
