@@ -2,19 +2,19 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-GPU=1
-SEED=10
+GPU=0
+SEED=12345
 
-#DOMAIN="fashion"
-DOMAIN="furniture"
+DOMAIN="fashion"
+#DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
 #TEST_SPLIT_NAME="test-std"
 
 BART_MODEL="bart-base"
 #BART_MODEL="bart-large"
 
-ARCHITECTURE="bi"
-#ARCHITECTURE="poly"
+#ARCHITECTURE="bi"
+ARCHITECTURE="poly"
 #ARCHITECTURE="both"
 if [ ${ARCHITECTURE} == "bi" ]
 then
