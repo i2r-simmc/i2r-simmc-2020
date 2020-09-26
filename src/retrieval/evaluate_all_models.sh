@@ -2,11 +2,11 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-GPU=0
-SEED=3237
+GPU=1
+SEED=0
 
-#DOMAIN="fashion"
-DOMAIN="furniture"
+DOMAIN="fashion"
+#DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
 #TEST_SPLIT_NAME="test-std"
 
@@ -31,7 +31,7 @@ TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 # Directory to output results
 OUTPUT_DIR="../../output/${DOMAIN}/${MODEL_LABEL}/${TEST_SPLIT_NAME}/"
 # Directory where pretrained model is stored
-MODEL_DIR="../../model/${DOMAIN}/${BART_MODEL}/best_model/"
+MODEL_DIR="../../model/${DOMAIN}/${BART_MODEL}_${BART_MODEL}/best_model/"
 # Directory to store trained model
 if [ ${ARCHITECTURE} == "bi" ]
 then
