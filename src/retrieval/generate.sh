@@ -7,7 +7,7 @@ GPU=1
 DOMAIN="fashion"
 #DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
-#TESTSET="test-std"
+#TEST_SPLIT_NAME="test-std"
 
 BART_MODEL="bart-base"
 #BART_MODEL="bart-large"
