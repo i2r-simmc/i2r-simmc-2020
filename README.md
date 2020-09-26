@@ -49,7 +49,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 	- Optionally, you can generate with specified setting including gpu_id, testing batch size and testing split name
 	- Testing split name can be `devtest` or `test-std` based on the file you want to test.
 	- $ bash generate.sh \<domain\> <test_split_name> <gpu_id> <test_batch_size>
-	- e.g. $ bash generate.sh fashion 0 20 devtest
+	- e.g. $ bash generate.sh fashion devtest 0 20
 	- The default testing batch size is 20, if you encounter CUDA memory issue, please reduce testing batch size.
 - The generation output files of `devtest` dataset for subtasks #1,#2 (generation),#3 can be found at the followings:
 	- output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1.json
