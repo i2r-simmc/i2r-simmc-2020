@@ -85,6 +85,6 @@ else:
 retrieval_metrics = evaluate_response_retrieval(gt_responses, model_scores, single_round_evaluation)
 print(retrieval_metrics)
 
-if (mode==devtest):
+if (mode=='devtest'):
     export_results(retrieval_metrics)
     print('Devtest results exported to csv at {}'.format(os.path.join(args.output_dir, '{}-subtask-2-retrieval-results.csv'.format(args.domain))))
