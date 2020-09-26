@@ -3,6 +3,7 @@
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
 GPU=0
+SEED=3237
 
 #DOMAIN="fashion"
 DOMAIN="furniture"
@@ -43,4 +44,4 @@ fi
 echo "Performing evaluation for ${DOMAIN} ${TEST_SPLIT_NAME} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
 python3 run.py --bart_model ${BART_MODEL} --model_in ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
- --testset ${TEST_SPLIT_NAME} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M} --gpu ${GPU} --set_seed --eval 
+ --testset ${TEST_SPLIT_NAME} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M} --gpu ${GPU} --set_seed --seed ${SEED} --eval 
