@@ -2,6 +2,8 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
+GPU=1
+
 DOMAIN="fashion"
 #DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
@@ -37,8 +39,6 @@ elif [ ${ARCHITECTURE} == "poly" ]
 then 
     MODEL_OUT="../../model/${DOMAIN}/poly-encoder/best_model/"
 fi
-
-GPU=1
 
 echo "Performing evaluation for ${DOMAIN} ${TEST_SPLIT_NAME} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
