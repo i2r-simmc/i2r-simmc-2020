@@ -28,7 +28,7 @@ fi
 # Directory where data is stored
 TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 # Directory to output results
-OUTPUT_DIR="../../output/${DOMAIN}/${BART_MODEL}_${MODEL_LABEL}/${TEST_SPLIT_NAME}/"
+OUTPUT_DIR="../../output/${DOMAIN}/${MODEL_LABEL}/${TEST_SPLIT_NAME}/"
 # Directory where pretrained model is stored
 MODEL_DIR="../../model/${DOMAIN}/${BART_MODEL}/best_model/"
 # Directory to store trained model
