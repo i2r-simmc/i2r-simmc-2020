@@ -3,8 +3,7 @@ ROOT=../data/simmc_$DOMAIN
 TEST_SPLIT=${2:-devtest}
 MODEL=${3:-"facebook/bart-large"}
 JOINT_MODEL_NAME="${MODEL/facebook\//}"
-MODEL_TYPE_COMBINED=${JOINT_MODEL_NAME}_poly-encoder
-OUTPUT_ROOT=../output/$DOMAIN/$MODEL_TYPE_COMBINED/$TEST_SPLIT
+OUTPUT_ROOT=../output/$DOMAIN/$JOINT_MODEL_NAME/$TEST_SPLIT
 
 # Evaluate for devtest or test-std dataset
 python -m mm_dst.utils.evaluate_dst \
