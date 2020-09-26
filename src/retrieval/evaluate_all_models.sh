@@ -10,8 +10,8 @@ TESTSET="test-std"
 BART_MODEL="bart-base"
 #BART_MODEL="bart-large"
 
-ARCHITECTURE="bi"
-#ARCHITECTURE="poly"
+#ARCHITECTURE="bi"
+ARCHITECTURE="poly"
 #ARCHITECTURE="both"
 if [ ${ARCHITECTURE} == "bi" ]
 then
