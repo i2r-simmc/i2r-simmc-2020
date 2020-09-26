@@ -1,9 +1,9 @@
 DOMAIN=$1
-LOCAL_RANK=${2:-0}
-LEARNING_RATE=${3:-1e-5}
-BATCH_SIZE=${4:-3}
+MODEL=${2:-"facebook/bart-large"}
+LOCAL_RANK=${3:-0}
+LEARNING_RATE=${4:-1e-5}
+BATCH_SIZE=${5:-3}
 ROOT=../data/simmc_$DOMAIN
-MODEL="facebook/bart-large"
 
 python main.py \
     --action=train \

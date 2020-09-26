@@ -36,9 +36,10 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 - $ cd src
 - $ bash train.sh \<domain\>
 	- \<domain\> is either `fashion` or `furniture`
-	- Optionally, you can train `fashion` and `furniture` dataset with specified setting including gpu_id, learning_rate and batch_size
-		- $ bash train.sh \<domain\> <gpu_id> <learning_rate> <batch_size>
-		- e.g. $ bash train.sh fashion 0 1e-5 3
+	- Optionally, you can train `fashion` and `furniture` dataset with specified setting including model_name, gpu_id, learning_rate and batch_size
+		- $ bash train.sh \<domain\> <model_name> <gpu_id> <learning_rate> <batch_size>
+		- model name can be "facebook/bart-large" or "facebook/bart-base"
+		- e.g. $ bash train.sh "facebook/bart-large" fashion 0 1e-5 3
 		- The default learning_rate is 1e-5, default batch size is 3, if you encounter CUDA memory issue, please reduce batch size to 2 or 1.
 
 ## Generation 
@@ -46,10 +47,11 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 - $ cd src/
 - $ bash generate.sh \<domain\> <test_split_name>
 	- e.g. $ bash generate.sh fashion
-	- Optionally, you can generate with specified setting including gpu_id, testing batch size and testing split name
+	- Optionally, you can generate with specified setting including model_name, gpu_id, testing batch size and testing split name
+	- model name can be "facebook/bart-large" or "facebook/bart-base"
 	- Testing split name can be `devtest` or `test-std` based on the file you want to test.
-	- $ bash generate.sh \<domain\> <test_split_name> <gpu_id> <test_batch_size>
-	- e.g. $ bash generate.sh fashion devtest 0 20
+	- $ bash generate.sh \<domain\> <test_split_name> <model_name> <gpu_id> <test_batch_size>
+	- e.g. $ bash generate.sh fashion "facebook/bart-large" devtest 0 20
 	- The default testing batch size is 20, if you encounter CUDA memory issue, please reduce testing batch size.
 - The generation output files of `devtest` dataset for subtasks #1,#2 (generation),#3 can be found at the followings:
 	- output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1.json
@@ -75,30 +77,30 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 ## Evaluation (Joint learning)
 - Evaluate Sub-Task #1, Sub-Task #2 Generation and Sub-Task #3 together with specific domain
 - $ cd src/
-- $ bash evaluate_all.sh \<domain\> <test_split_name>
-	- e.g. $ bash evaluate_all.sh fashion devtest
+- $ bash evaluate_all.sh \<domain\> <test_split_name> <model_name>
+	- e.g. $ bash evaluate_all.sh fashion devtest "facebook/bart-large"
 - The performance report for the non-retrieval tasks can be found at output/\<domain\>/<combined_model_name>/<test_split_name>/report.joint-learning.csv
 
 ## (Optionally) Evaluation for subtasks individually (Joint learning)
 ### Testing for Sub-Task #1
 - Evaluation for subtask#1 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
 - $ cd src/
-- $ bash evaluate_subtask1.sh \<domain\> <test_split_name>
-- Eg: $ bash evaluate_subtask1.sh fashion devtest
+- $ bash evaluate_subtask1.sh \<domain\> <test_split_name> <model_name>
+- Eg: $ bash evaluate_subtask1.sh fashion devtest "facebook/bart-large"
 - The results can be retrieved from `output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1-report.json`
 
 ### Testing for Sub-Task #2 Generation
 - Evaluation for subtask#2 generation with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
 - $ cd src/
-- $ bash evaluate_subtask2.sh \<domain\> <test_split_name>
-- Eg: $ bash evaluate_subtask2.sh fashion devtest
+- $ bash evaluate_subtask2.sh \<domain\> <test_split_name> <model_name>
+- Eg: $ bash evaluate_subtask2.sh fashion devtest "facebook/bart-large"
 - The results can be retrieved from `output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-2-generation-report.json`
 
 ### Testing for Sub-Task #3
 - Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
 - $ cd src/
-- $ bash evaluate_subtask3.sh \<domain\> <test_split_name>
-- Eg: $ bash evaluate_subtask3.sh fashion devtest
+- $ bash evaluate_subtask3.sh \<domain\> <test_split_name> <model_name>
+- Eg: $ bash evaluate_subtask3.sh fashion devtest "facebook/bart-large"
 - The results can be retrieved from `output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-3-report.json`
 
 ## Evaluation (Retrieval)
