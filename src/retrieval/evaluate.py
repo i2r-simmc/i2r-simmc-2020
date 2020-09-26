@@ -3,6 +3,7 @@ from collections import defaultdict
 import argparse
 import numpy as np
 import os
+import csv
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--domain', type=str)
