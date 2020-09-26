@@ -3,6 +3,7 @@ import time
 import json
 import shutil
 import argparse
+import csv
 import numpy as np
 from tqdm import tqdm
 import random
@@ -34,22 +35,47 @@ def set_seed(args):
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
 
-def export_results(results_out):
+def check_dir_exist():
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
+    if not os.path.exists(args.model_out):
+        os.makedirs(args.model_out)
     
-    with open(os.path.join(args.train_dir, 'candidates.json')) as f:
+def export_scores_json(results_out):
+    
+    with open(os.path.join(args.train_dir,'{}_candidates.json'.format(args.testset))) as f:
         candidates = json.load(f)
     output = []
     idx = 0
     for dial in candidates['retrieval_candidates']:
         output_dict = {"dialog_id": dial['dialogue_idx'], "candidate_scores": []}
-        for turn in dial['retrieval_candidates']:
-            output_dict['candidate_scores'].append(results_out[idx])
+        for turn_num, turn in enumerate(dial['retrieval_candidates']):
+            output_turn_dict = {"scores": [], "turn_id": turn_num} 
+            output_turn_dict["scores"] = results_out[idx]
+            #output_dict['candidate_scores'].append(results_out[idx])
+            output_dict["candidate_scores"].append(output_turn_dict)
             idx+=1
         output.append(output_dict)
-    output_path = os.path.join(args.output_dir, 'subtask2_retrieval_{}_{}_output.json'.format(args.architecture, args.poly_m))
+    if (args.testset=='test-std'):
+        output_path = os.path.join(args.output_dir, 'dstc9-simmc-teststd-{}-subtask-2-retrieval.json'.format(args.domain))
+    else:
+        output_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain, args.architecture, args.poly_m))
     with open(output_path, 'w') as outfile:
-        json.dump(output, outfile)
-       
+        json.dump(output, outfile)    
+
+def export_results(results):
+    results_path = os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m))                        
+    if not os.path.isfile(results_path):
+        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m)), 'w') as csvfile:
+            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)   
+            filewriter.writerow(['Model', 'r@1', 'r@5', 'r@10', 'Mean Rank', 'MRR'])
+            filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['R1'], results['R5'], results['R10'], results['MR'], results['MRR']])
+    else:
+        with open(os.path.join(args.output_dir, '{}_{}_{}_results.csv'.format(args.domain, args.architecture, args.poly_m)), 'a') as csvfile:
+            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)   
+            filewriter.writerow(['{}_{}'.format(args.architecture, args.poly_m), results['R1'], results['R5'], results['R10'], results['MR'], results['MRR']])
+
+                  
 def eval_running_model(dataloader, test=False):
     loss_fct = CrossEntropyLoss()
     model.eval()
@@ -112,7 +138,10 @@ def eval_running_model(dataloader, test=False):
             'MRR': np.mean(mrr),
         }
     if test:
-        export_results(list(results_out))
+        if args.generate:
+            export_scores_json(list(results_out))
+        if (args.testset == 'devtest'):
+            export_results(result)
         
     return result
 
@@ -122,9 +151,13 @@ if __name__ == '__main__':
     ## Required parameters
     parser.add_argument("--bart_model", default='bart-base/', type=str)
     parser.add_argument("--eval", action="store_true")
+    parser.add_argument("--generate", action="store_true")
     parser.add_argument("--model_type", default='bart', type=str)
     parser.add_argument("--output_dir", required=True, type=str)
-    parser.add_argument("--train_dir", default='data/simmc_fashion', type=str)
+    parser.add_argument("--model_in", default='../../model/fashion/bart-base/best_model/', type=str)
+    parser.add_argument("--model_out", default = '../../model/fashion/bi-encoder/best_model/', type = str)
+    parser.add_argument("--train_dir", default='../data/simmc_fashion', type=str)
+    parser.add_argument("--testset", default='devtest', type=str)
     parser.add_argument("--domain", default = 'fashion', type=str)
     parser.add_argument("--use_pretrain", action="store_true")
     parser.add_argument("--architecture", required=True, type=str, help='[poly, bi]')
@@ -167,7 +200,9 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "%d" % args.gpu
     if args.set_seed:
         set_seed(args)
-
+    
+    check_dir_exist()
+    
     MODEL_CLASSES = {
         'bart': (BartConfig, BartTokenizer, BartModel)
     }
@@ -180,6 +215,8 @@ if __name__ == '__main__':
 
     print('=' * 80)
     print('Train dir:', args.train_dir)
+    print('Pretrained model dir:', args.model_in)
+    print('Trained model dir:', args.model_out)
     print('Output dir:', args.output_dir)
     print('=' * 80)
 
@@ -191,7 +228,7 @@ if __name__ == '__main__':
         train_dataloader = DataLoader(train_dataset, batch_size=args.train_batch_size, collate_fn=train_dataset.batchify_join_str, shuffle=True, num_workers=1)
         t_total = len(train_dataloader) // args.gradient_accumulation_steps * args.num_train_epochs
     else: # test
-        val_dataset = SelectionDataset(os.path.join(args.train_dir, 'test.txt'),
+        val_dataset = SelectionDataset(os.path.join(args.train_dir, '{}.txt'.format(args.testset)),
                                                                   context_transform, response_transform, sample_cnt=None)
 
     val_dataloader = DataLoader(val_dataset, batch_size=args.eval_batch_size, collate_fn=val_dataset.batchify_join_str, shuffle=False, num_workers=1)
@@ -205,23 +242,23 @@ if __name__ == '__main__':
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
     #shutil.copyfile(os.path.join(args.bart_model, 'vocab.txt'), os.path.join(args.output_dir, 'vocab.txt'))
-    shutil.copyfile(os.path.join(args.bart_model, 'config.json'), os.path.join(args.output_dir, 'config.json'))
+    #shutil.copyfile(os.path.join(args.bart_model, 'config.json'), os.path.join(args.output_dir, 'config.json'))
     log_wf = open(os.path.join(args.output_dir, 'log.txt'), 'a', encoding='utf-8')
     print (args, file=log_wf)
 
-    state_save_path = os.path.join(args.output_dir, '{}_{}_pytorch_model.bin'.format(args.architecture, args.poly_m))
+    state_save_path = os.path.join(args.model_out, '{}_{}_{}_pytorch_model.bin'.format(args.bart_model, args.architecture, args.poly_m))
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     ########################################
     ## build BART encoder
     ########################################
-    bart_config = ConfigClass.from_json_file(os.path.join(args.bart_model, 'config.json'))
+    bart_config = ConfigClass.from_json_file(os.path.join(args.model_in, 'config.json'))
     if args.use_pretrain and not args.eval:
-        previous_model_file = os.path.join(args.bart_model, "pytorch_model.bin")
+        previous_model_file = os.path.join(args.model_in, "pytorch_model.bin")
         print('Loading parameters from', previous_model_file)
         log_wf.write('Loading parameters from %s' % previous_model_file + '\n')
         model_state_dict = torch.load(previous_model_file, map_location="cpu")
-        bart = BertModelClass.from_pretrained(args.bart_model, state_dict=model_state_dict)
+        bart = BertModelClass.from_pretrained(args.model_in, state_dict=model_state_dict)
         del model_state_dict
     else:
         bart = BertModelClass(bart_config)
@@ -239,7 +276,10 @@ if __name__ == '__main__':
         print('Loading parameters from', state_save_path)
         model.load_state_dict(torch.load(state_save_path))
         test_result = eval_running_model(val_dataloader, test=True)
-        print (test_result)
+        if not args.generate:
+            print (test_result)
+        elif args.generate:
+            print ('Output scores json file is saved at ', args.output_dir)
         exit()
         
     no_decay = ["bias", "LayerNorm.weight"]

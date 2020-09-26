@@ -1,7 +1,9 @@
 DOMAIN=$1
 ROOT=../data/simmc_$DOMAIN
-MODEL_TYPE_COMBINED=bart-large_poly-encoder
 TEST_SPLIT=${2:-devtest}
+MODEL=${3:-"facebook/bart-large"}
+JOINT_MODEL_NAME="${MODEL/facebook\//}"
+MODEL_TYPE_COMBINED=${JOINT_MODEL_NAME}_poly-encoder
 OUTPUT_ROOT=../output/$DOMAIN/$MODEL_TYPE_COMBINED/$TEST_SPLIT
 
 # Evaluate for devtest or test-std dataset

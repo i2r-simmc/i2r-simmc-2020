@@ -1,11 +1,12 @@
 DOMAIN=$1
-LOCAL_RANK=${2:-0}
-TEST_BATCH_SIZE=${3:-20}
-TEST_SPLIT=${4:-devtest}
-MODEL_TYPE_COMBINED=bart-large_poly-encoder
+TEST_SPLIT=${2:-devtest}
+MODEL=${3:-"facebook/bart-large"}
+LOCAL_RANK=${4:-0}
+TEST_BATCH_SIZE=${5:-20}
+JOINT_MODEL_NAME="${MODEL/facebook\//}"
+MODEL_TYPE_COMBINED=${JOINT_MODEL_NAME}_poly-encoder
 ROOT=../data/simmc_$DOMAIN
 OUTPUT_ROOT=../output/$DOMAIN/$MODEL_TYPE_COMBINED/$TEST_SPLIT
-MODEL="facebook/bart-large"
 
 mkdir -p ${OUTPUT_ROOT}
 

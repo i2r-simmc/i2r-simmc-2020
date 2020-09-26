@@ -1,11 +1,12 @@
-# Train Bi-Encoder and Poly-Encoder for Fashion/Furniture
+#!/bin/bash
 
-GPU=1
+# Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-# Select domain as appropriate
-DOMAIN="fashion"
-#DOMAIN="furniture"
-TESTSET="devtest"
+GPU=0
+
+#DOMAIN="fashion"
+DOMAIN="furniture"
+TEST_SPLIT_NAME="devtest"
 #TESTSET="test-std"
 
 BART_MODEL="bart-base"
@@ -14,8 +15,6 @@ BART_MODEL="bart-base"
 ARCHITECTURE="bi"
 #ARCHITECTURE="poly"
 #ARCHITECTURE="both"
-
-
 if [ ${ARCHITECTURE} == "bi" ]
 then
     POLY_M=0
@@ -29,7 +28,7 @@ fi
 # Directory where data is stored
 TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 # Directory to output results
-OUTPUT_DIR="../../output/${DOMAIN}/${BART_MODEL}_${MODEL_LABEL}/${TESTSET}/"
+OUTPUT_DIR="../../output/${DOMAIN}/${BART_MODEL}_${MODEL_LABEL}/${TEST_SPLIT_NAME}/"
 # Directory where pretrained model is stored
 MODEL_DIR="../../model/${DOMAIN}/${BART_MODEL}/best_model/"
 # Directory to store trained model
@@ -37,14 +36,13 @@ if [ ${ARCHITECTURE} == "bi" ]
 then
     MODEL_OUT="../../model/${DOMAIN}/bi-encoder/best_model/"
 elif [ ${ARCHITECTURE} == "poly" ]
-then
+then 
     MODEL_OUT="../../model/${DOMAIN}/poly-encoder/best_model/"
 fi
 
-echo "Performing training for ${DOMAIN} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
+echo "Performing evaluation for ${DOMAIN} ${TEST_SPLIT_NAME} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
-# Run training for bi-encoder and poly-encoder
 python3 run.py --bart_model ${BART_MODEL} --model_in ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
---testset ${TESTSET} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M} --gpu ${GPU} --set_seed --seed 8692
+ --testset ${TEST_SPLIT_NAME} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M} --gpu ${GPU} --set_seed --eval 
 
-#python3 run.py --bart_model ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} --use_pretrain --architecture poly --poly_m ${POLY_M}
+#python3 run.py --domain ${DOMAIN} --bart_model ${MODEL_DIR} --model_out ${MODEL_DIR} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --testset ${TEST_SPLIT_NAME} --use_pretrain --architecture poly --poly_m ${POLY_M} --eval

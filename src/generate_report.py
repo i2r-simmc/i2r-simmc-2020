@@ -10,8 +10,8 @@ REPORT_FILE_NAMES = [
 ]
 
 
-def gen_report(domain, test_split_name, model_type_combined):
-    report_data_frame = pd.DataFrame(columns=['Domain', 'Action Accuracy', 'Action Perplexity', 'Attribute Accuracy',
+def gen_report(domain, test_split_name, model_type_combined, joint_model_name):
+    report_data_frame = pd.DataFrame(columns=['Model Type', 'Domain', 'Action Accuracy', 'Action Perplexity', 'Attribute Accuracy',
                                               'BLEU-4', 'Dialog Act F1', 'Slot F1'])
     action_accuracy=None
     action_perplexity=None
@@ -38,7 +38,7 @@ def gen_report(domain, test_split_name, model_type_combined):
             dialog_act_f1 = report['act_f1']
         if 'slot_f1' in report:
             slot_f1 = report['slot_f1']
-    report_data_frame.loc[0] = [domain, action_accuracy, action_perplexity, attribute_accuracy, blue4, dialog_act_f1, slot_f1]
+    report_data_frame.loc[0] = [joint_model_name, domain, action_accuracy, action_perplexity, attribute_accuracy, blue4, dialog_act_f1, slot_f1]
     report_data_frame.to_csv(output_report_file_path)
 
 
@@ -50,9 +50,12 @@ if __name__ == '__main__':
                         help="name of the test split")
     parser.add_argument('--model_type_combined', default=None, type=str, required=True,
                         help="combined model name")
+    parser.add_argument('--joint_model_name', default=None, type=str, required=True,
+                        help="joint learning model name")
 
     args = parser.parse_args()
     domain = args.domain
     test_split_name = args.test_split_name
     model_type_combined = args.model_type_combined
-    gen_report(domain, test_split_name, model_type_combined)
+    joint_model_name = args.joint_model_name
+    gen_report(domain, test_split_name, model_type_combined, joint_model_name)

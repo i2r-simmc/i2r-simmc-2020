@@ -487,6 +487,10 @@ if __name__ == '__main__':
     cfg['test_output_pred'] = args.test_output_pred
     cfg['model_metainfo_path'] = args.model_metainfo_path
     cfg['encoder_decoder_model_name_or_path'] = args.encoder_decoder_model_name_or_path
+    model_name = args.encoder_decoder_model_name_or_path if '/' not in args.encoder_decoder_model_name_or_path else \
+        args.encoder_decoder_model_name_or_path[args.encoder_decoder_model_name_or_path.rindex('/')+1:]
+    cfg['save_model_file'] = cfg['save_model_file'] % model_name
+    cfg['load_model_file'] = cfg['load_model_file'] % model_name
     if 'train' == args.action:
         train(cfg)
     elif 'generate' == args.action:
