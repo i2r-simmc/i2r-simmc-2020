@@ -110,6 +110,7 @@ def convert_json_to_flattened(
     with open(output_path_predict, 'w') as f_predict:
         X = '\n'.join(predicts)
         f_predict.write(X)
+    print('saving to %s' % output_path_predict)
 
     if len(targets) > 0:
         directory = os.path.dirname(output_path_target)
@@ -119,6 +120,7 @@ def convert_json_to_flattened(
         with open(output_path_target, 'w') as f_target:
             Y = '\n'.join(targets)
             f_target.write(Y)
+        print('saving to %s' % output_path_target)
 
 
 def represent_visual_objects(visual_objects):
