@@ -128,6 +128,9 @@ def main(args):
         gt_actions, model_actions, args["single_round_evaluation"]
     )
     print(action_metrics)
+    del action_metrics['confusion_matrix']
+    if 'report_output_path' in args:
+        json.dump(action_metrics, open(args['report_output_path'], 'w'))
 
 
 if __name__ == "__main__":
@@ -148,6 +151,11 @@ if __name__ == "__main__":
         action="store_true",
         default=False,
         help="Single round evaluation for hidden split",
+    )
+    parser.add_argument(
+        "--report_output_path",
+        default=None,
+        help="API report output path"
     )
     try:
         parsed_args = vars(parser.parse_args())

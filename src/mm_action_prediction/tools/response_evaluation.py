@@ -66,6 +66,9 @@ def main(args):
     bleu_score = evaluate_response_generation(
         gt_responses, model_responses, args["single_round_evaluation"]
     )
+    report = {'bleu': bleu_score}
+    if 'report_output_path' in args:
+        json.dump(report, open(args['report_output_path'], 'w'))
     print("BLEU Score: {:.4f}".format(bleu_score))
 
 
@@ -85,6 +88,11 @@ if __name__ == "__main__":
         action="store_true",
         default=False,
         help="Single round evaluation for hidden split",
+    )
+    parser.add_argument(
+        "--report_output_path",
+        default=None,
+        help="API report output path"
     )
     try:
         parsed_args = vars(parser.parse_args())
