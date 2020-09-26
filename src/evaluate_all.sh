@@ -14,5 +14,5 @@ echo ${MODEL_TYPE_COMBINED}
 python generate_report.py --domain=${DOMAIN} --test_split_name=${TEST_SPLIT} --model_type_combined=${MODEL_TYPE_COMBINED} --joint_model_name=${JOINT_MODEL_NAME}
 
 # Copy to bi-encoder
-mkdir -p ../output/${DOMAIN}/${MODEL_TYPE_COMBINED_BI_ENCODER}
-cp -rf ../output/${DOMAIN}/${MODEL_TYPE_COMBINED_PLY_ENCODER}/${TEST_SPLIT} ../output/${DOMAIN}/${MODEL_TYPE_COMBINED_BI_ENCODER}/
+mkdir -p ../output/${DOMAIN}/${MODEL_TYPE_COMBINED_BI_ENCODER}/${TEST_SPLIT}
+cp -rf ../output/${DOMAIN}/${MODEL_TYPE_COMBINED_PLY_ENCODER}/${TEST_SPLIT}/* ../output/${DOMAIN}/${MODEL_TYPE_COMBINED_BI_ENCODER}/${TEST_SPLIT}
