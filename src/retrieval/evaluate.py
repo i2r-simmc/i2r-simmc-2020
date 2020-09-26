@@ -11,6 +11,8 @@ parser.add_argument('--output_dir', required=True, type=str)
 parser.add_argument('--train_dir', default='../data/', type=str)
 parser.add_argument('--testset', default='devtest', type=str)
 parser.add_argument('--mode', default='devtest', type=str)
+parser.add_argument("--architecture", default='bi-encoder', type=str)
+parser.add_argument('--poly_m', default=0, type=int, help="Number of m of polyencoder")
 args = parser.parse_args()
 
 def evaluate_response_retrieval(gt_responses, model_scores, single_round_eval=False):
