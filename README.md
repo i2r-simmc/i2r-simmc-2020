@@ -70,6 +70,8 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 ## Generation
 
 # Evaluation
+- Evaluation scripts are written for `devtest` dataset, assuming that the scripts evaluate all turns in \<domain\>_\<dataset\>_dials.json and that the json files contain the ground-truth of all the turns.
+
 ## Evaluation (Joint learning)
 - Evaluate Sub-Task #1, Sub-Task #2 Generation and Sub-Task #3 together with specific domain
 - $ cd src/
