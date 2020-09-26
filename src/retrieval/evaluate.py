@@ -53,7 +53,7 @@ def evaluate_response_retrieval(gt_responses, model_scores, single_round_eval=Fa
     }
 
 scores_json_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain))
-gt_json_path = os.path.join(args.train_dir, 'simmc_{}/{}_{}_dials_retrieval_candidates.json'.format(args.domain, args.domain, args.mode))
+gt_json_path = os.path.join(args.train_dir, '{}_{}_dials_retrieval_candidates.json'.format(args.domain, args.mode))
 
 print("Reading: {}".format(scores_json_path))
 
