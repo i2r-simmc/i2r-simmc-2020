@@ -65,7 +65,7 @@ print("Reading: {}".format(gt_json_path))
 with open(gt_json_path, "r") as infile:
     gt_responses = json.load(infile)
 
-if (args.testset==teststd):
+if (args.testset=='teststd'):
     single_round_evaluation = True
 else:
     single_round_evaluation = False
