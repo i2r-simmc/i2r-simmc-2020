@@ -30,7 +30,7 @@ TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 # Directory to output results
 OUTPUT_DIR="../../output/${DOMAIN}/${MODEL_LABEL}/${TEST_SPLIT_NAME}/"
 # Directory where pretrained model is stored
-MODEL_DIR="../../model/${DOMAIN}/${MODEL_LABEL}/best_model/"
+MODEL_DIR="../../model/${DOMAIN}/${BART_MODEL}/best_model/"
 # Directory to store trained model
 if [ ${ARCHITECTURE} == "bi" ]
 then
