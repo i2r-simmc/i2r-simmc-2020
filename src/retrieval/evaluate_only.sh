@@ -48,4 +48,5 @@ fi
 
 echo "Performing evaluation for ${DOMAIN} ${TEST_SPLIT_NAME} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
-python3 evaluate.py --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} --testset ${TESTSET} --mode ${TEST_SPLIT_NAME} --architecture ${MODEL_LABEL} --poly_m $(POLY_M}
+python3 evaluate.py --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} --testset ${TESTSET} --mode ${TEST_SPLIT_NAME} \
+--architecture ${MODEL_LABEL} --poly_m ${POLY_M}
