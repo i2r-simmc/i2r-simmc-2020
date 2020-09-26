@@ -3,6 +3,12 @@ Codes submitted to SIMMC challenge (https://github.com/facebookresearch/simmc), 
 # Overview
 We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 2020) for generating outputs of the tasks (Sub-Task #1, Sub-Task #2 Response, Sub-Task #3) in a single string, called joint learning model, and another model based on Poly-Encoder (Humeau et al., 2019) for generating outputs of the Sub-Task #2 Retrieval task, called retrieval model. The retrieval model utilizes the BART encoder fine-tuned by the joint learning model. The two models are trained and evaluated separately.
 
+The scripts support the following pre-trained models for the joint learning tasks: facebook/bart-base and facebook/bart-large. They also support the following models for the retrieval task: bi-encoder and poly-encoder. They generate outputs of the following four combinations of the models:
+- bart-base + bi-encoder
+- bart-base + poly-encoder
+- bart-large + bi-encoder
+- bart-large + poly-encoder
+
 # Installation 
 - $ git clone https://github.com/i2r-simmc/i2r-simmc-2020.git && cd i2r-simmc-2020
 - Place SIMMC data files under data/simmc_fasion,furniture folders
@@ -39,7 +45,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 	- Optionally, you can train `fashion` and `furniture` dataset with specified setting including model_name, gpu_id, learning_rate and batch_size
 		- $ bash train.sh \<domain\> <model_name> <gpu_id> <learning_rate> <batch_size>
 		- model name can be "facebook/bart-large" or "facebook/bart-base"
-		- e.g. $ bash train.sh "facebook/bart-large" fashion 0 1e-5 3
+		- e.g. $ bash train.sh fashion "facebook/bart-large" 0 1e-5 3
 		- The default learning_rate is 1e-5, default batch size is 3, if you encounter CUDA memory issue, please reduce batch size to 2 or 1.
 
 ## Generation 
@@ -51,7 +57,7 @@ We developed an end-to-end encoder-decoder model based on BART (Lewis et al., 20
 	- model name can be "facebook/bart-large" or "facebook/bart-base"
 	- Testing split name can be `devtest` or `test-std` based on the file you want to test.
 	- $ bash generate.sh \<domain\> <test_split_name> <model_name> <gpu_id> <test_batch_size>
-	- e.g. $ bash generate.sh fashion "facebook/bart-large" devtest 0 20
+	- e.g. $ bash generate.sh fashion devtest "facebook/bart-large" 0 20
 	- The default testing batch size is 20, if you encounter CUDA memory issue, please reduce testing batch size.
 - The generation output files of `devtest` dataset for subtasks #1,#2 (generation),#3 can be found at the followings:
 	- output/\<domain\>/<combined_model_name>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1.json
