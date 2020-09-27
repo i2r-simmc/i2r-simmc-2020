@@ -119,9 +119,9 @@ The scripts support the following pre-trained models for the joint learning task
 - The results can be retrieved from `output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-3-report.json`
 
 ## Evaluation (Retrieval)
-- Edit src/retrieval/evaluate_all_models.sh ($DOMAIN=`fashion` or `furniture`, $TESTSET=`devtest` or `test-std`)
+- Edit src/retrieval/evaluate_all.sh ($DOMAIN=`fashion` or `furniture`, $ARCHITECTURE=`bi` or `poly`, $TESTSET=`devtest` or `test-std`)
 - $ cd src/retrieval
-- $ bash evaluate_all_models.sh
+- $ bash evaluate_all.sh
 
 # References
 - Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A., Levy, O., … Zettlemoyer, L. (2020). BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension. In ACL. Retrieved from http://arxiv.org/abs/1910.13461
