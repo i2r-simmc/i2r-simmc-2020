@@ -2,10 +2,8 @@
 
 # Evaluate Bi-Encoder and Poly-Encoder for Fashion/Furniture
 
-GPU=0
-
-#DOMAIN="fashion"
-DOMAIN="furniture"
+DOMAIN="fashion"
+#DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
 #TEST_SPLIT_NAME="test-std"
 
@@ -25,6 +23,14 @@ then
     MODEL_LABEL="poly-encoder"
 fi
 
+if [ ${TEST_SPLIT_NAME} == "devtest" ]
+then
+    TESTSET="devtest"
+elif [ ${TEST_SPLIT_NAME} == "test-std" ]
+then
+    TESTSET="teststd"
+fi
+
 # Directory where data is stored
 TRAIN_DIR="../../data/simmc_${DOMAIN}/"
 # Directory to output results
@@ -42,7 +48,5 @@ fi
 
 echo "Performing evaluation for ${DOMAIN} ${TEST_SPLIT_NAME} dataset with ${BART_MODEL} and ${MODEL_LABEL}"
 
-python3 run.py --bart_model ${BART_MODEL} --model_in ${MODEL_DIR} --model_out ${MODEL_OUT} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} \
- --testset ${TEST_SPLIT_NAME} --use_pretrain --architecture ${ARCHITECTURE} --poly_m ${POLY_M} --gpu ${GPU} --set_seed --eval 
-
-#python3 run.py --domain ${DOMAIN} --bart_model ${MODEL_DIR} --model_out ${MODEL_DIR} --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --testset ${TEST_SPLIT_NAME} --use_pretrain --architecture poly --poly_m ${POLY_M} --eval
+python3 evaluate.py --output_dir ${OUTPUT_DIR} --train_dir ${TRAIN_DIR} --domain ${DOMAIN} --testset ${TESTSET} --mode ${TEST_SPLIT_NAME} \
+--architecture ${MODEL_LABEL} --poly_m ${POLY_M}

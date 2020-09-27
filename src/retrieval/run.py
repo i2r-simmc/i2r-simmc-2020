@@ -59,7 +59,7 @@ def export_scores_json(results_out):
     if (args.testset=='test-std'):
         output_path = os.path.join(args.output_dir, 'dstc9-simmc-teststd-{}-subtask-2-retrieval.json'.format(args.domain))
     else:
-        output_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain, args.architecture, args.poly_m))
+        output_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain))
     with open(output_path, 'w') as outfile:
         json.dump(output, outfile)    
 
@@ -140,7 +140,7 @@ def eval_running_model(dataloader, test=False):
     if test:
         if args.generate:
             export_scores_json(list(results_out))
-        if (args.testset == 'devtest'):
+        if (args.testset == 'devtest') and not args.generate:
             export_results(result)
         
     return result
@@ -275,6 +275,7 @@ if __name__ == '__main__':
     if args.eval:
         print('Loading parameters from', state_save_path)
         model.load_state_dict(torch.load(state_save_path))
+        print('Generating model scores...')
         test_result = eval_running_model(val_dataloader, test=True)
         if not args.generate:
             print (test_result)
