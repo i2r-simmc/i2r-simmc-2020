@@ -5,7 +5,7 @@
 DOMAIN="fashion"
 #DOMAIN="furniture"
 TEST_SPLIT_NAME="devtest"
-#TEST_SPLIT_NAME="test-std"
+#TEST_SPLIT_NAME="teststd"
 
 BART_MODEL="bart-base"
 #BART_MODEL="bart-large"
@@ -26,7 +26,7 @@ fi
 if [ ${TEST_SPLIT_NAME} == "devtest" ]
 then
     TESTSET="devtest"
-elif [ ${TEST_SPLIT_NAME} == "test-std" ]
+elif [ ${TEST_SPLIT_NAME} == "teststd" ]
 then
     TESTSET="teststd"
 fi

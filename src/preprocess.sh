@@ -66,7 +66,7 @@ done
 for DOMAIN in "furniture" "fashion"
 do
   ROOT="../data/simmc_${DOMAIN}/"
-  for SPLIT in "test-std"
+  for SPLIT in "teststd"
   do
   python -m preprocess_input \
       --input_path_json="${ROOT}""$DOMAIN"_"$SPLIT"_dials.json \

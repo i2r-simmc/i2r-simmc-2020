@@ -5,7 +5,7 @@ MODEL=${3:-"facebook/bart-large"}
 JOINT_MODEL_NAME="${MODEL/facebook\//}"
 OUTPUT_ROOT=../output/$DOMAIN/$JOINT_MODEL_NAME/$TEST_SPLIT
 
-# Evaluate for devtest or test-std dataset
+# Evaluate for devtest or teststd dataset
 if [ $TEST_SPLIT == "devtest" ]
 then
   python -m mm_action_prediction.tools.response_evaluation \

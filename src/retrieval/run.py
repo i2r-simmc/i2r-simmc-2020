@@ -56,7 +56,7 @@ def export_scores_json(results_out):
             output_dict["candidate_scores"].append(output_turn_dict)
             idx+=1
         output.append(output_dict)
-    if (args.testset=='test-std'):
+    if (args.testset=='teststd'):
         output_path = os.path.join(args.output_dir, 'dstc9-simmc-teststd-{}-subtask-2-retrieval.json'.format(args.domain))
     else:
         output_path = os.path.join(args.output_dir, 'dstc9-simmc-{}-{}-subtask-2-retrieval.json'.format(args.testset, args.domain))

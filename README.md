@@ -23,7 +23,7 @@ The scripts support the following pre-trained models for the joint learning task
 		- <model_type>: `bart-large`, `bart-base`, `poly-encoder`, or `bi-encoder`
 - $ mkdir -p output/fashion && mkdir output/furniture
 	- Output JSON files are stored at output/\<domain\>/<model_type>/\<dataset\>/dstc9-simmc-\<dataset\>-\<domain\>-\<task\>.json
-		- \<dataset\>: devtest, test-std
+		- \<dataset\>: devtest, teststd
 		- \<task\>: subtask-1, subtask-2-generation, subtask-2-retrieval, subtask-3
 			- If <model_type> is `bi-encoder` or `poly-encoder`, it only saves subtask-2-retrieval task's outputs
 			- If <model_type> is `bart-large` or `bart-base`, it saves the other tasks' outputs
@@ -37,7 +37,6 @@ The scripts support the following pre-trained models for the joint learning task
 ## Data pre-processing 
 - $ cd src
 - $ bash preprocess.sh
-	- We assume that the files of the `test-std` set are named e.g. fashion_test-std_dials.json. If not, line 69 of preprocess.sh and the <test_split_name> in the scripts below should be changed accordingly.
 
 ## Training 
 - Train with the pre-processed data and save model files under the "model" folder
@@ -54,7 +53,7 @@ The scripts support the following pre-trained models for the joint learning task
 - Generate the outputs of the trained model for Sub-Task #1, Sub-Task #2 Generation and Sub-Task #3 together 
 - $ cd src/
 - $ bash generate.sh \<domain\> <test_split_name>
-	- <test_split_name>: `devtest`, `test-std`
+	- <test_split_name>: `devtest`, `teststd`
 	- e.g. $ bash generate.sh fashion devtest
 	- Optionally, you can generate with specified settings, including model_name, gpu_id, testing batch size and testing split name
 		- $ bash generate.sh \<domain\> <test_split_name> <model_name> <gpu_id> <test_batch_size>
@@ -67,10 +66,9 @@ The scripts support the following pre-trained models for the joint learning task
 
 # Retrieval
 ## Data pre-processing 
-- Edit src/preprocess_retrieval.sh ($TESTSET=`devtest` or `test-std`)
+- Edit src/preprocess_retrieval.sh ($TESTSET=`devtest` or `teststd`)
 - $ cd src
 - $ bash preprocess_retrieval.sh 
-	- We assume that the files of the `test-std` set are named e.g. fashion_test-std_dials.json. If not, line 6 of preprocess_retrieval.sh and $TEST_SPLIT_NAME in the scripts below should be changed accordingly.
 
 ## Training 
 - Edit src/retrieval/train_all_models.sh ($DOMAIN=`fashion` or `furniture`, $ARCHITECTURE=`bi` or `poly`)
@@ -79,7 +77,7 @@ The scripts support the following pre-trained models for the joint learning task
 - $ bash train_all_models.sh
 
 ## Generation
-- Edit src/retrieval/generate.sh ($DOMAIN=`fashion` or `furniture`, $ARCHITECTURE=`bi` or `poly`, $TEST_SPLIT_NAME=`devtest` or `test-std`)
+- Edit src/retrieval/generate.sh ($DOMAIN=`fashion` or `furniture`, $ARCHITECTURE=`bi` or `poly`, $TEST_SPLIT_NAME=`devtest` or `teststd`)
 - $ cd src/retrieval
 - $ bash generate.sh
 - The generation output files can be found at the followings:
@@ -98,28 +96,28 @@ The scripts support the following pre-trained models for the joint learning task
 
 ## (Optionally) Evaluation for subtasks individually (Joint learning)
 ### Testing for Sub-Task #1
-- Evaluation for subtask#1 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
+- Evaluation for subtask#1 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `teststd`
 - $ cd src/
 - $ bash evaluate_subtask1.sh \<domain\> <test_split_name> <model_name>
 - Eg: $ bash evaluate_subtask1.sh fashion devtest "facebook/bart-large"
 - The results can be retrieved from `output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-1-report.json`
 
 ### Testing for Sub-Task #2 Generation
-- Evaluation for subtask#2 generation with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
+- Evaluation for subtask#2 generation with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `teststd`
 - $ cd src/
 - $ bash evaluate_subtask2.sh \<domain\> <test_split_name> <model_name>
 - Eg: $ bash evaluate_subtask2.sh fashion devtest "facebook/bart-large"
 - The results can be retrieved from `output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-2-generation-report.json`
 
 ### Testing for Sub-Task #3
-- Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `test-std`
+- Evaluation for subtask#3 with the official SIMMC script with specific domain, domain can be `fashion` and `furniture`, `test_split_name` can be `devtest` or `teststd`
 - $ cd src/
 - $ bash evaluate_subtask3.sh \<domain\> <test_split_name> <model_name>
 - Eg: $ bash evaluate_subtask3.sh fashion devtest "facebook/bart-large"
 - The results can be retrieved from `output/\<domain\>/<model_type>/<test_split_name>/dstc9-simmc-devtest-fashion-subtask-3-report.json`
 
 ## Evaluation (Retrieval)
-- Edit src/retrieval/evaluate_all.sh ($DOMAIN=`fashion` or `furniture`, $ARCHITECTURE=`bi` or `poly`, $TESTSET=`devtest` or `test-std`)
+- Edit src/retrieval/evaluate_all.sh ($DOMAIN=`fashion` or `furniture`, $ARCHITECTURE=`bi` or `poly`, $TESTSET=`devtest` or `teststd`)
 - $ cd src/retrieval
 - $ bash evaluate_all.sh
 

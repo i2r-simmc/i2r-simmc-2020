@@ -21,7 +21,7 @@ def evaluate_response_retrieval(gt_responses, model_scores, single_round_eval=Fa
         gt_responses: Ground truth responses.
         model_scores: Scores assigned by the model to the candidates.
         single_round_eval: Evaluate only for the last turn.
-    If in single round evaluation model (mostly for hidden test-std split),
+    If in single round evaluation model (mostly for hidden teststd split),
     use hidden gt_index field. Else, 0th element is the ground truth for other
     splits.
     """
