@@ -72,12 +72,6 @@ def _get_enc_dec_tokenizers(config, model):
         else:
             tokenizer_enc = None
             tokenizer_dec = None
-    with open(os.path.join(config['model_metainfo_path']), 'r') as file_id:
-        action_metainfo = json.load(file_id)["actions"]
-    action_keys = list(map(lambda x: x['name'], action_metainfo))
-    tokenizer_dec.add_special_tokens({
-        'additional_special_tokens': action_keys
-    })
     tokenizer_dec.eos_token = '<end>'
     tokenizer_dec.cls_token = '<cls>'
     tokenizer_dec.unk_token = '<unk>'
@@ -309,11 +303,20 @@ def generation(config):
     action_dict = {ii["name"]: ii["id"] for ii in action_metainfo}
     sorted_actions = sorted(action_dict.keys(), key=lambda x: action_dict[x])
     action_vocab_ids = []
+    encode_action_vocab_ids = set()
     for action_id, action in enumerate(sorted_actions):
-        action_vocab_id = vocab_dict[action]
+        action_vocab_id = tokenizer_dec.encode(action)
+        action_vocab_id = action_vocab_id[1:-1]
         action_vocab_ids.append(action_vocab_id)
-    action_vocab_ids = torch.tensor(action_vocab_ids)
-    action_vocab_ids = action_vocab_ids.to(config['device'])
+        for vid in action_vocab_id:
+            encode_action_vocab_ids.add(vid)
+    encode_action_vocab_ids = sorted(encode_action_vocab_ids)
+    action_vocab_id_map = dict()
+    for index, action_id in enumerate(encode_action_vocab_ids):
+        action_vocab_id_map[action_id] = index
+    encode_action_vocab_ids = torch.tensor(encode_action_vocab_ids)
+    encode_action_vocab_ids = encode_action_vocab_ids.to(config['device'])
+    all_special_token_ids = tokenizer_enc.all_special_ids
     with torch.no_grad():
         for step, batch in enumerate(tqdm(test_dataloader, desc="Test Iteration")):
             action_log_probs = []
@@ -328,23 +331,50 @@ def generation(config):
             decoded = tokenizer_dec.batch_decode(generated)
             pred_rp = _clean_special_characters(decoded, tokenizer_dec, remove_space=config['remove_space'] if \
                 'remove_space' in config else True)
-            action_logits = torch.index_select(logits, -1, action_vocab_ids)
-            action_logits = torch.nn.functional.log_softmax(action_logits, dim=-1)
+            token_action_logits = torch.index_select(logits, -1, encode_action_vocab_ids)
+            token_action_logits = torch.nn.functional.softmax(token_action_logits, dim=-1)
+            token_action_logits = token_action_logits.cpu()
 
             for i in range(len(generated)):
                 flag = 0
                 for j in range(len(generated[i])):
-                    if generated[i][j].item() not in [tokenizer_enc.cls_token_id, tokenizer_enc.bos_token_id,
-                                                      tokenizer_enc.pad_token_id, tokenizer_enc.eos_token_id,
-                                                      tokenizer_enc.cls_token_id, tokenizer_enc.sep_token_id,
-                                                      tokenizer_enc.mask_token_id, tokenizer_enc.unk_token_id]:
+                    if generated[i][j].item() not in all_special_token_ids:
                         flag = 1
                         break
                 if flag:
-                    action_token_index = j
-                    action_log_prob = {action_token: action_logits[i, action_token_index-1, k].item() for k, action_token
+                    start_action_token_index = j
+                    end_action_token_index = start_action_token_index + 1
+                    for j in range(start_action_token_index + 1, len(generated[i])):
+                        if generated[i][j].item() in encode_action_vocab_ids:
+                            end_action_token_index = j + 1
+                        else:
+                            break
+                    action_logits = []
+                    start_action_token_index = start_action_token_index - 1
+                    end_action_token_index = end_action_token_index - 1
+                    num_action_tokens = end_action_token_index - start_action_token_index
+                    for action_vocab_id in action_vocab_ids:
+                        action_logit = 1.0
+                        if len(action_vocab_id) <= num_action_tokens:
+                            for j, vid in enumerate(action_vocab_id):
+                                action_logit = action_logit * token_action_logits[i][start_action_token_index + j][
+                                    action_vocab_id_map[vid]]
+                            action_logit = pow(action_logit, 1 / (len(action_vocab_id)))
+                        else:
+                            for j, vid in enumerate(action_vocab_id):
+                                if j == num_action_tokens:
+                                    break
+                                action_logit = action_logit * token_action_logits[i][start_action_token_index + j][
+                                    action_vocab_id_map[vid]]
+                            action_logit = pow(action_logit, 1 / (num_action_tokens))
+                        action_logits.append(action_logit)
+                    action_logits = torch.tensor(action_logits)
+                    action_logits = torch.nn.functional.log_softmax(action_logits, dim=-1)
+                    action_log_prob = {action_token: action_logits[j].item() for j, action_token
                                        in enumerate(sorted_actions)}
                     action_log_probs.append(action_log_prob)
+                else:
+                    print('error, can\'t generate candidate API tokens', step, i, generated[i])
             result_lines = [{
                 'result': pred_rp[i],
                 'log_probs': action_log_probs[i]
