@@ -8,9 +8,8 @@ from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from tqdm import tqdm
 from transformers import AutoTokenizer, AdamW, get_linear_schedule_with_warmup
-from transformers.modeling_encoder_decoder import EncoderDecoderModel
-
-from model import BartLMHeadModel
+from transformers.models.encoder_decoder import EncoderDecoderModel
+from transformers.models.bart import BartForConditionalGeneration as BartLMHeadModel
 from transformer_data_loader import SimmcFusionDataset
 from util import get_config, load_json, save_json
 from mm_dst.gpt2_dst.utils.convert import parse_flattened_result
@@ -18,6 +17,12 @@ from mm_dst.gpt2_dst.utils.convert import parse_flattened_result
 
 START_BELIEF_STATE = '=> Belief State :'
 END_OF_BELIEF = '<EOB>'
+
+
+def _reset_bart_config(bart_cfg):
+    bart_cfg.activation_dropout = 0.0
+    bart_cfg.attention_dropout = 0.0
+    bart_cfg.no_repeat_ngram_size = 0
 
 
 def _get_models(config):
@@ -28,6 +33,8 @@ def _get_models(config):
     share_model = 'share_model' in config and config['share_model']
     if 'bart' in enc_model:
         model = BartLMHeadModel.from_pretrained(enc_model, torchscript=True)
+        _reset_bart_config(model.config)
+        _reset_bart_config(model.base_model.config)
     else:
         model = EncoderDecoderModel.from_encoder_decoder_pretrained(enc_model, dec_model,
                                                                     share_model=share_model,
@@ -98,7 +105,7 @@ def _clean_special_characters(lines, tokenizer_dec, remove_space=True):
         rp.replace(r'<|endoftext|>', '').replace('!', '').replace('<cls>', '').replace('<CLS>', '').replace('[sep]',
                                                                                                             '').replace(
             '[SEP]', '').replace(
-            '<end>', '').replace('<END>', '').replace('<eod>', '').replace('<EOD>', '') for rp in lines]
+            '<end>', '').replace('<END>', '').replace('<s>', '').replace('<eod>', '').replace('<EOD>', '') for rp in lines]
     if remove_space:
         lines = [rp.replace(' ', '') for rp in lines]
     lines = [rp.replace(pad_token, '') for rp in lines]
@@ -118,7 +125,7 @@ def _train_epoch(model, optimizer, scheduler, train_data_loader, dev_data_loader
             src = batch[0].to(config['device'])
             src_mask = batch[1].to(config['device'])
             tgt = batch[2].to(config['device'])
-            loss = model(input_ids=src, attention_mask=src_mask, decoder_input_ids=tgt, labels=tgt)[0]
+            loss = model(input_ids=src, attention_mask=src_mask, labels=tgt)[0]
             model.zero_grad()
             optimizer.zero_grad()
             loss.backward()
@@ -137,7 +144,7 @@ def _train_epoch(model, optimizer, scheduler, train_data_loader, dev_data_loader
                 src = batch[0].to(config['device'])
                 src_mask = batch[1].to(config['device'])
                 tgt = batch[2].to(config['device'])
-                outputs = model(input_ids=src, attention_mask=src_mask, decoder_input_ids=tgt, labels=tgt)
+                outputs = model(input_ids=src, attention_mask=src_mask, labels=tgt)
                 loss = outputs[0]
                 valid_loss.append(loss.item())
             mean_valid_loss = np.mean(valid_loss)
@@ -323,7 +330,7 @@ def generation(config):
             src = batch[0].to(config['device'])
             src_mask = batch[1].to(config['device'])
             
-            generated, logits = model.generate(src,
+            generated = model.generate(src,
                                        max_length=200 if config['name'] == 'simmc-fusion' else 60,
                                        decoder_start_token_id=tokenizer_dec.pad_token_id,
                                        attention_mask=src_mask,
@@ -331,50 +338,52 @@ def generation(config):
             decoded = tokenizer_dec.batch_decode(generated)
             pred_rp = _clean_special_characters(decoded, tokenizer_dec, remove_space=config['remove_space'] if \
                 'remove_space' in config else True)
-            token_action_logits = torch.index_select(logits, -1, encode_action_vocab_ids)
-            token_action_logits = torch.nn.functional.softmax(token_action_logits, dim=-1)
-            token_action_logits = token_action_logits.cpu()
+            # token_action_logits = torch.index_select(logits, -1, encode_action_vocab_ids)
+            # token_action_logits = torch.nn.functional.softmax(token_action_logits, dim=-1)
+            # token_action_logits = token_action_logits.cpu()
 
+            # for i in range(len(generated)):
+            #     flag = 0
+            #     for j in range(len(generated[i])):
+            #         if generated[i][j].item() not in all_special_token_ids:
+            #             flag = 1
+            #             break
+            #     if flag:
+            #         start_action_token_index = j
+            #         end_action_token_index = start_action_token_index + 1
+            #         for j in range(start_action_token_index + 1, len(generated[i])):
+            #             if generated[i][j].item() in encode_action_vocab_ids:
+            #                 end_action_token_index = j + 1
+            #             else:
+            #                 break
+            #         action_logits = []
+            #         start_action_token_index = start_action_token_index - 1
+            #         end_action_token_index = end_action_token_index - 1
+            #         num_action_tokens = end_action_token_index - start_action_token_index
+            #         for action_vocab_id in action_vocab_ids:
+            #             action_logit = 1.0
+            #             if len(action_vocab_id) <= num_action_tokens:
+            #                 for j, vid in enumerate(action_vocab_id):
+            #                     action_logit = action_logit * token_action_logits[i][start_action_token_index + j][
+            #                         action_vocab_id_map[vid]]
+            #                 action_logit = pow(action_logit, 1 / (len(action_vocab_id)))
+            #             else:
+            #                 for j, vid in enumerate(action_vocab_id):
+            #                     if j == num_action_tokens:
+            #                         break
+            #                     action_logit = action_logit * token_action_logits[i][start_action_token_index + j][
+            #                         action_vocab_id_map[vid]]
+            #                 action_logit = pow(action_logit, 1 / (num_action_tokens))
+            #             action_logits.append(action_logit)
+            #         action_logits = torch.tensor(action_logits)
+            #         action_logits = torch.nn.functional.log_softmax(action_logits, dim=-1)
+            #         action_log_prob = {action_token: action_logits[j].item() for j, action_token
+            #                            in enumerate(sorted_actions)}
+            #         action_log_probs.append(action_log_prob)
+            #     else:
+            #         print('error, can\'t generate candidate API tokens', step, i, generated[i])
             for i in range(len(generated)):
-                flag = 0
-                for j in range(len(generated[i])):
-                    if generated[i][j].item() not in all_special_token_ids:
-                        flag = 1
-                        break
-                if flag:
-                    start_action_token_index = j
-                    end_action_token_index = start_action_token_index + 1
-                    for j in range(start_action_token_index + 1, len(generated[i])):
-                        if generated[i][j].item() in encode_action_vocab_ids:
-                            end_action_token_index = j + 1
-                        else:
-                            break
-                    action_logits = []
-                    start_action_token_index = start_action_token_index - 1
-                    end_action_token_index = end_action_token_index - 1
-                    num_action_tokens = end_action_token_index - start_action_token_index
-                    for action_vocab_id in action_vocab_ids:
-                        action_logit = 1.0
-                        if len(action_vocab_id) <= num_action_tokens:
-                            for j, vid in enumerate(action_vocab_id):
-                                action_logit = action_logit * token_action_logits[i][start_action_token_index + j][
-                                    action_vocab_id_map[vid]]
-                            action_logit = pow(action_logit, 1 / (len(action_vocab_id)))
-                        else:
-                            for j, vid in enumerate(action_vocab_id):
-                                if j == num_action_tokens:
-                                    break
-                                action_logit = action_logit * token_action_logits[i][start_action_token_index + j][
-                                    action_vocab_id_map[vid]]
-                            action_logit = pow(action_logit, 1 / (num_action_tokens))
-                        action_logits.append(action_logit)
-                    action_logits = torch.tensor(action_logits)
-                    action_logits = torch.nn.functional.log_softmax(action_logits, dim=-1)
-                    action_log_prob = {action_token: action_logits[j].item() for j, action_token
-                                       in enumerate(sorted_actions)}
-                    action_log_probs.append(action_log_prob)
-                else:
-                    print('error, can\'t generate candidate API tokens', step, i, generated[i])
+                action_log_probs.append({k: 1.0 for k in action_dict})
             result_lines = [{
                 'result': pred_rp[i],
                 'log_probs': action_log_probs[i]

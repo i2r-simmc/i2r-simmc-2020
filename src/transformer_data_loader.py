@@ -73,6 +73,7 @@ class SimmcFusionDataset(Dataset):
         self.src = []
         self.tgt = []
         self.src_mask = []
+        self.original_target = []
 
         print('loading data from', data_file_src)
         with open(data_file_src) as f_src:
@@ -106,7 +107,8 @@ class SimmcFusionDataset(Dataset):
             src_mask = src.attention_mask
             self.src.append(src_vec)
             self.src_mask.append(src_mask)
-            
+
+            self.original_target.append(lines_tgt[idx])
             if len(lines_tgt) > 0:
                 tgt_vec = tokenizer_dec.encode(lines_tgt[idx], add_special_tokens=True)
                 self.tgt.append(tgt_vec)
