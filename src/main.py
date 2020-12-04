@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from tqdm import tqdm
 from transformers import AutoTokenizer, AdamW, get_linear_schedule_with_warmup
 from transformers.models.encoder_decoder import EncoderDecoderModel
-from transformers.models.bart import BartForConditionalGeneration as BartLMHeadModel
+from model import BartForConditionalGeneration as BartLMHeadModel
 from transformer_data_loader import SimmcFusionDataset
 from util import get_config, load_json, save_json
 from mm_dst.gpt2_dst.utils.convert import parse_flattened_result
@@ -32,7 +32,7 @@ def _get_models(config):
     dec_model = encoder_decoder_tuples[0] if len(encoder_decoder_tuples) == 1 else encoder_decoder_tuples[1]
     share_model = 'share_model' in config and config['share_model']
     if 'bart' in enc_model:
-        model = BartLMHeadModel.from_pretrained(enc_model, torchscript=True)
+        model = BartLMHeadModel.from_pretrained(enc_model, torchscript=True, enable_alternative_input=True)
         _reset_bart_config(model.config)
         _reset_bart_config(model.base_model.config)
     else:
@@ -124,8 +124,11 @@ def _train_epoch(model, optimizer, scheduler, train_data_loader, dev_data_loader
                                           disable=config['local_rank'] not in [-1, 0])):
             src = batch[0].to(config['device'])
             src_mask = batch[1].to(config['device'])
-            tgt = batch[2].to(config['device'])
-            loss = model(input_ids=src, attention_mask=src_mask, labels=tgt)[0]
+            src2 = batch[2].to(config['device'])
+            src2_mask = batch[3].to(config['device'])
+            tgt = batch[4].to(config['device'])
+            loss = model(input_ids=src, input2_ids=src2, attention_mask=src_mask,
+                         attention2_mask=src2_mask, labels=tgt)[0]
             model.zero_grad()
             optimizer.zero_grad()
             loss.backward()
@@ -143,8 +146,11 @@ def _train_epoch(model, optimizer, scheduler, train_data_loader, dev_data_loader
                     tqdm(dev_data_loader, desc="Dev Iteration", disable=config['local_rank'] not in [-1, 0])):
                 src = batch[0].to(config['device'])
                 src_mask = batch[1].to(config['device'])
-                tgt = batch[2].to(config['device'])
-                outputs = model(input_ids=src, attention_mask=src_mask, labels=tgt)
+                src2 = batch[2].to(config['device'])
+                src2_mask = batch[3].to(config['device'])
+                tgt = batch[4].to(config['device'])
+                outputs = model(input_ids=src, input2_ids=src2, attention_mask=src_mask,
+                                attention2_mask=src2_mask, labels=tgt)
                 loss = outputs[0]
                 valid_loss.append(loss.item())
             mean_valid_loss = np.mean(valid_loss)
@@ -409,17 +415,22 @@ def train(config):
     def collate(examples):
         src_list = list(map(lambda x: x[0], examples))
         src_mask_list = list(map(lambda x: x[1], examples))
-        tgt_list = list(map(lambda x: x[2], examples))
+        src2_list = list(map(lambda x: x[2], examples))
+        src2_mask_list = list(map(lambda x: x[3], examples))
+        tgt_list = list(map(lambda x: x[4], examples))
         if tokenizer_enc._pad_token is None:
             src_pad = pad_sequence(src_list, batch_first=True)
+            src2_pad = pad_sequence(src2_list, batch_first=True)
         else:
             src_pad = pad_sequence(src_list, batch_first=True, padding_value=tokenizer_enc.pad_token_id)
+            src2_pad = pad_sequence(src2_list, batch_first=True, padding_value=tokenizer_enc.pad_token_id)
         src_mask_pad = pad_sequence(src_mask_list, batch_first=True, padding_value=0)
+        src2_mask_pad = pad_sequence(src2_mask_list, batch_first=True, padding_value=0)
         if tokenizer_dec._pad_token is None:
             tgt_pad = pad_sequence(tgt_list, batch_first=True)
         else:
             tgt_pad = pad_sequence(tgt_list, batch_first=True, padding_value=tokenizer_dec.pad_token_id)
-        return src_pad, src_mask_pad, tgt_pad
+        return src_pad, src_mask_pad, src2_pad, src2_mask_pad, tgt_pad
 
     train_dataset = SimmcFusionDataset(arguments.train_data_src,
                                        arguments.train_data_tgt_subtask1,
@@ -517,6 +528,7 @@ if __name__ == '__main__':
     cfg['batch_size'] = args.batch_size
     cfg['test_batch_size'] = args.test_batch_size
     device = torch.device("cuda", args.local_rank)
+    # device = torch.device("cpu")
     cfg['device'] = device
     cfg['domain'] = args.domain
     cfg['test_data_original_file'] = args.test_data_original_file

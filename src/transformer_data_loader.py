@@ -1,4 +1,5 @@
 import torch
+import re
 from torch.utils.data import Dataset
 
 from util import load_json
@@ -6,6 +7,7 @@ from util import load_json
 
 START_BELIEF_STATE = '=> Belief State :'
 END_OF_BELIEF = '<EOB>'
+MULTI_MODAL_CONTEXT_REGEX = re.compile(r'<SOM>.*<EOM>')
 
 
 class SimmcDataset(Dataset):
@@ -71,8 +73,10 @@ class SimmcActDataset(Dataset):
 class SimmcFusionDataset(Dataset):
     def __init__(self, data_file_src, data_file_tgt1, data_file_tgt2, data_file_tgt3, tokenizer_enc, tokenizer_dec, is_train=True):
         self.src = []
+        self.src2 = []
         self.tgt = []
         self.src_mask = []
+        self.src_mask2 = []
         self.original_target = []
 
         print('loading data from', data_file_src)
@@ -102,11 +106,18 @@ class SimmcFusionDataset(Dataset):
                 '<cls> <end>' for _ in range(len(lines_src))]
 
         for idx in range(len(lines_src)):
+            line_src2 = ' '.join(MULTI_MODAL_CONTEXT_REGEX.findall(lines_src[idx])).strip()
+            lines_src[idx] = MULTI_MODAL_CONTEXT_REGEX.sub('', lines_src[idx]).replace('=> Belief State :', '').strip()
             src = tokenizer_enc(lines_src[idx], add_special_tokens=True)
             src_vec = src.input_ids
             src_mask = src.attention_mask
+            src2 = tokenizer_enc(line_src2, add_special_tokens=True)
+            src2_vec = src2.input_ids
+            src2_mask = src2.attention_mask
             self.src.append(src_vec)
             self.src_mask.append(src_mask)
+            self.src2.append(src2_vec)
+            self.src_mask2.append(src2_mask)
 
             self.original_target.append(lines_tgt[idx])
             if len(lines_tgt) > 0:
@@ -118,6 +129,8 @@ class SimmcFusionDataset(Dataset):
 
     def __getitem__(self, item):
         if len(self.tgt) > 0:
-            return torch.tensor(self.src[item]), torch.tensor(self.src_mask[item]), torch.tensor(self.tgt[item])
+            return torch.tensor(self.src[item]), torch.tensor(self.src_mask[item]), torch.tensor(self.src2[item]), \
+                   torch.tensor(self.src_mask2[item]), torch.tensor(self.tgt[item])
         else:
-            return torch.tensor(self.src[item]), torch.tensor(self.src_mask[item])
+            return torch.tensor(self.src[item]), torch.tensor(self.src_mask[item]), torch.tensor(self.src2[item]), \
+                   torch.tensor(self.src_mask2[item])
