@@ -43,7 +43,7 @@ from transformers.modeling_outputs import (
 from transformers.modeling_utils import PreTrainedModel
 from transformers.utils import logging
 from configuration_bart import BartConfig
-
+from generation_utils import GenerationMixin
 
 logger = logging.get_logger(__name__)
 
@@ -1018,7 +1018,7 @@ class BartModel(PretrainedBartModel):
 @add_start_docstrings(
     "The BART Model with a language modeling head. Can be used for summarization.", BART_START_DOCSTRING
 )
-class BartForConditionalGeneration(PretrainedBartModel):
+class BartForConditionalGeneration(GenerationMixin, PretrainedBartModel):
     base_model_prefix = "model"
     _keys_to_ignore_on_load_missing = [r"final_logits_bias", r"encoder\.version", r"decoder\.version"]
 
@@ -1043,6 +1043,14 @@ class BartForConditionalGeneration(PretrainedBartModel):
             extra_bias = torch.zeros((1, new_num_tokens - old_num_tokens), device=self.final_logits_bias.device)
             new_bias = torch.cat([self.final_logits_bias, extra_bias], dim=1)
         self.register_buffer("final_logits_bias", new_bias)
+
+    @classmethod
+    def from_pretrained(cls, pretrained_model_name_or_path, *model_args, **kwargs):
+        result = super().from_pretrained(pretrained_model_name_or_path, *model_args, **kwargs)
+        if result.config.enable_alternative_input:
+            result.model.encoder2 = copy.deepcopy(result.model.encoder)
+            result.model.encoder2.embed_tokens = result.model.encoder.embed_tokens
+        return result
 
     @add_start_docstrings_to_model_forward(BART_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=Seq2SeqLMOutput, config_class=_CONFIG_FOR_DOC)

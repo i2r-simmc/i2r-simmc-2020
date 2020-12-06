@@ -281,22 +281,22 @@ def generation(config):
     def collate(examples):
         src_list = list(map(lambda x: x[0], examples))
         src_mask_list = list(map(lambda x: x[1], examples))
-        
+        src2_list = list(map(lambda x: x[2], examples))
+        src2_mask_list = list(map(lambda x: x[3], examples))
+        tgt_list = list(map(lambda x: x[4], examples))
         if tokenizer_enc._pad_token is None:
             src_pad = pad_sequence(src_list, batch_first=True)
+            src2_pad = pad_sequence(src2_list, batch_first=True)
         else:
             src_pad = pad_sequence(src_list, batch_first=True, padding_value=tokenizer_enc.pad_token_id)
+            src2_pad = pad_sequence(src2_list, batch_first=True, padding_value=tokenizer_enc.pad_token_id)
         src_mask_pad = pad_sequence(src_mask_list, batch_first=True, padding_value=0)
-
-        if len(examples[0]) == 2:        
-            return src_pad, src_mask_pad
-
-        tgt_list = list(map(lambda x: x[2], examples))
+        src2_mask_pad = pad_sequence(src2_mask_list, batch_first=True, padding_value=0)
         if tokenizer_dec._pad_token is None:
             tgt_pad = pad_sequence(tgt_list, batch_first=True)
         else:
             tgt_pad = pad_sequence(tgt_list, batch_first=True, padding_value=tokenizer_dec.pad_token_id)
-        return src_pad, src_mask_pad, tgt_pad
+        return src_pad, src_mask_pad, src2_pad, src2_mask_pad, tgt_pad
 
     test_dataset = SimmcFusionDataset(arguments.test_data_src,
                                       None,

@@ -1,6 +1,8 @@
 logs/
+data/
 output/
 model/
+model_**/
 \.idea/**
 \.ipynb_checkpoints/**
 *.pyc
