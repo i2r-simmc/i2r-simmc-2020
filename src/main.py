@@ -335,11 +335,16 @@ def generation(config):
             action_log_probs = []
             src = batch[0].to(config['device'])
             src_mask = batch[1].to(config['device'])
+            src2 = batch[2].to(config['device'])
+            src2_mask = batch[3].to(config['device'])
             
             generated = model.generate(src,
+                                       input_ids2=src2,
                                        max_length=200 if config['name'] == 'simmc-fusion' else 60,
+                                       num_beams=1,
                                        decoder_start_token_id=tokenizer_dec.pad_token_id,
                                        attention_mask=src_mask,
+                                       attention2_mask=src2_mask,
                                        early_stopping=True)
             decoded = tokenizer_dec.batch_decode(generated)
             pred_rp = _clean_special_characters(decoded, tokenizer_dec, remove_space=config['remove_space'] if \

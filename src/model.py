@@ -957,6 +957,16 @@ class BartModel(PretrainedBartModel):
                 output_hidden_states=output_hidden_states,
                 return_dict=return_dict,
             )
+            encoder_outputs = self.encoder2(
+                input_ids=input2_ids,
+                attention_mask=attention2_mask,
+                encoder_hidden_states=encoder_outputs[0],
+                encoder_padding_mask=attention_mask,
+                past_key_values=past_key_values,
+                output_attentions=output_attentions,
+                output_hidden_states=output_hidden_states,
+                return_dict=return_dict,
+            )
         # If the user passed a tuple for encoder_outputs, we wrap it in a BaseModelOutput when return_dict=False
         elif return_dict and not isinstance(encoder_outputs, BaseModelOutput):
             encoder_outputs = BaseModelOutput(
@@ -964,16 +974,6 @@ class BartModel(PretrainedBartModel):
                 hidden_states=encoder_outputs[1] if len(encoder_outputs) > 1 else None,
                 attentions=encoder_outputs[2] if len(encoder_outputs) > 2 else None,
             )
-        encoder_outputs = self.encoder2(
-            input_ids=input2_ids,
-            attention_mask=attention2_mask,
-            encoder_hidden_states=encoder_outputs[0],
-            encoder_padding_mask=attention_mask,
-            past_key_values=past_key_values,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-        )
 
         # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
         decoder_outputs = self.decoder(
@@ -1179,6 +1179,9 @@ class BartForConditionalGeneration(GenerationMixin, PretrainedBartModel):
 
     def get_encoder(self):
         return self.model.encoder
+
+    def get_encoder2(self):
+        return self.model.encoder2
 
     def get_output_embeddings(self):
         return _make_linear_from_emb(self.model.shared)  # make it on the fly

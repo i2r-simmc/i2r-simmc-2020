@@ -75,14 +75,26 @@ class GenerationMixin:
         return input_ids.new_ones(input_ids.shape)
 
     def _prepare_encoder_decoder_kwargs_for_generation(
-        self, input_ids: torch.LongTensor, model_kwargs
+        self, input_ids: torch.LongTensor, input2_ids: torch.LongTensor, model_kwargs
     ) -> Dict[str, Any]:
         # retrieve encoder hidden states
         encoder = self.get_encoder()
         encoder_kwargs = {
             argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_")
         }
-        model_kwargs["encoder_outputs"]: ModelOutput = encoder(input_ids, return_dict=True, **encoder_kwargs)
+        encoder2 = self.get_encoder2()
+        attention2_mask = encoder_kwargs.pop('attention2_mask')
+        encoder_outputs = encoder(input_ids, **encoder_kwargs)
+        encoder_outputs = encoder2(input2_ids, 
+            attention_mask=attention2_mask, 
+            encoder_hidden_states=encoder_outputs[0],
+            encoder_padding_mask=encoder_kwargs.get('attention_mask'),
+            return_dict=True,
+            past_key_values=encoder_kwargs.get('past_key_values', None),
+            output_attentions=encoder_kwargs.get('output_attentions', None),
+            output_hidden_states=encoder_kwargs.get('output_hidden_states', None),
+        )
+        model_kwargs["encoder_outputs"]: ModelOutput = encoder_outputs #encoder(input_ids, return_dict=True, **encoder_kwargs)
         return model_kwargs
 
     def _prepare_decoder_input_ids_for_generation(
@@ -296,6 +308,7 @@ class GenerationMixin:
     def generate(
         self,
         input_ids: Optional[torch.LongTensor] = None,
+        input_ids2: Optional[torch.LongTensor] = None,
         max_length: Optional[int] = None,
         min_length: Optional[int] = None,
         do_sample: Optional[bool] = None,
@@ -480,7 +493,7 @@ class GenerationMixin:
 
         if self.config.is_encoder_decoder:
             # add encoder_outputs to model_kwargs
-            model_kwargs = self._prepare_encoder_decoder_kwargs_for_generation(input_ids, model_kwargs)
+            model_kwargs = self._prepare_encoder_decoder_kwargs_for_generation(input_ids, input_ids2, model_kwargs)
 
             # set input_ids as decoder_input_ids
             input_ids = self._prepare_decoder_input_ids_for_generation(
