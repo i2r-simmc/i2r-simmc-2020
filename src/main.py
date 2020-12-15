@@ -37,9 +37,7 @@ def _get_models(config):
         _reset_bart_config(model.base_model.config)
     else:
         model = EncoderDecoderModel.from_encoder_decoder_pretrained(enc_model, dec_model,
-                                                                    share_model=share_model,
-                                                                    torchscript=True,
-                                                                    encoder_torchscript=True)
+                                                                    share_model=share_model)
     return model
 
 
