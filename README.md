@@ -121,6 +121,9 @@ The scripts support the following pre-trained models for the joint learning task
 - $ cd src/retrieval
 - $ bash evaluate_all.sh
 
+# Citation
+- Xin Huang, Chor Seng Tan, Yan Bin Ng, Wei Shi, Kheng Hui Yeo, Ridong Jiang, Jung Jae Kim. (2021) Joint Generation and Bi-Encoder for Situated Interactive MultiModal Conversations. DSTC9 Workshop @ AAAI-21. (https://drive.google.com/file/d/1TlEp3vQGJFAwOindhziZlEqV46Kq8zPX/view?usp=sharing)
+
 # References
 - Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A., Levy, O., … Zettlemoyer, L. (2020). BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension. In ACL. Retrieved from http://arxiv.org/abs/1910.13461
 - Humeau, S., Shuster, K., Lachaux, M.-A., & Weston, J. (2019). Poly-encoders: Transformer Architectures and Pre-training Strategies for Fast and Accurate Multi-sentence Scoring. Retrieved from http://arxiv.org/abs/1905.01969
